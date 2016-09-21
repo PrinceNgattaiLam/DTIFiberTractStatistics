@@ -1,6 +1,6 @@
 #include "fiberprocessing.h"
 
-GroupType::Pointer read_fiber(std::string filename)
+GroupType::Pointer readFiberFile(std::string filename)
 {
 
 
@@ -123,7 +123,7 @@ GroupType::Pointer read_fiber(std::string filename)
     }
 }
 
-void write_fiber(const std::string & filename, GroupType::Pointer fibergroup){
+void writeFiberFile(const std::string & filename, GroupType::Pointer fibergroup){
 
     // Make sure origins are updated
     fibergroup->ComputeObjectToWorldTransform();

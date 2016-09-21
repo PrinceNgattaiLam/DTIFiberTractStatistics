@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<executable>
+    <category>Filter</category>
+    <title>Fiber Parametrization</title>
+    <description>Sampling of a bundle of fibers</description>
+    <version>1.0</version>
+    <contributor>Ngattai Lam Prince</contributor>
+
+    <parameters>
+        <geometry>
+            <name>inputFiber</name>
+            <label>Path to input fibers</label>
+            <channel>input</channel>
+            <index>0</index>
+            <description>Input fibers to be sampled</description>
+        </geometry>
+        <integer>
+              <name>nbSample</name>
+              <longflag>integer</longflag>
+              <description>
+              Number of Samples for the output fiber
+              </description>
+              <label>Number of Samples</label>
+              <default>30</default>
+        </integer>
+        <geometry>
+            <name>outputFiber</name>
+            <label>Output Volume</label>
+            <channel>output</channel>
+            <index>1</index>
+            <description>Output fibers to be sampled</description>
+        </geometry>
+    </parameters>
+</executable>
