@@ -1,22 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <executable>
-    <category>Filter</category>
+    <category>Sampling</category>
     <title>Fiber Parametrization</title>
     <description>Sampling of a bundle of fibers</description>
     <version>1.0</version>
-    <contributor>Ngattai Lam Prince</contributor>
-
+    <contributor>Ngattai Lam Prince, Juan Carlos Prieto, Martin Styner</contributor>
+   <acknowledgements>
+    This work is part of the project for the University Of North Carolina, Neuro Image Research and Analysis Laboratories.
+  </acknowledgements>
     <parameters>
         <geometry>
             <name>inputFiber</name>
             <label>Path to input fibers</label>
             <channel>input</channel>
-            <index>0</index>
-            <description>Input fibers to be sampled</description>
+            <longflag>inputfilename</longflag>
+            <description>Input fibers to be sampled (.vtk or .vtp)</description>
         </geometry>
         <integer>
               <name>nbSample</name>
-              <longflag>integer</longflag>
+              <flag>N</flag>
               <description>
               Number of Samples for the output fiber
               </description>
@@ -27,8 +29,8 @@
             <name>outputFiber</name>
             <label>Output Volume</label>
             <channel>output</channel>
-            <index>1</index>
-            <description>Output fibers to be sampled</description>
+            <longflag>outputfilename</longflag>
+            <description>Output fibers to be sampled (.vtk or .vtp)</description>
         </geometry>
     </parameters>
 </executable>

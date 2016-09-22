@@ -4,45 +4,43 @@
 #include <itkGroupSpatialObject.h>
 #include <vtkCellArray.h>
 #include <vtkSmartPointer.h>
+#include <vtkPolyDataAlgorithm.h>
 #include <itkDTITubeSpatialObject.h>
 
 typedef itk::GroupSpatialObject<3> GroupType;
 typedef GroupType::ChildrenListType ChildrenListType;
 typedef itk::DTITubeSpatialObjectPoint<3> DTIPointType;
 
-class SamplingFilter{ //:itk::ImageToImageFilter< TImage, TImage >{
+class FiberParametrization : public vtkPolyDataAlgorithm 
+{
 public:
-//    /** Conventions for a filter */
-//        typedef smooth Self;
-//        typedef itk::ImageToImageFilter< TImage, TImage > superclass;
-//        typedef itk::SmartPointer<Self> Pointer;
-//        typedef itk::SmartPointer<const Self> constPointer;
+    /** Conventions for a VTK Class*/
+     vtkTypeMacro(FiberParametrization,vtkPolyDataAlgorithm);
+     static FiberParametrization *New();
 
-//        /* Method for creation through the object factory. */
-//        itkNewMacro(Self)
+     /** Set & Get*/
+     vtkSetMacro(nbSamples, int);
 
-//        /* Run-time type information (and related methods). */
-//        itkTypeMacro(smooth,ImageToImageFilter)
-
-    /** Constructor & Destructor */
-    SamplingFilter(int NbSamples, GroupType::Pointer input);
-    ~SamplingFilter();
 
     /** Main Functions */
-    void SetInput(GroupType::Pointer input);
-    void SetNbSamples(int NbSamples);
     GroupType::Pointer GetOutput();
-
+    void SetInput(GroupType::Pointer input);
+    //void SetNbSamples(int nbSamples);
 
 private:
     /** Internal Functions*/
- void sampling_unit(ChildrenListType::const_iterator it); // Create a new fiber with the good number of samples
+    void sampling_unit(ChildrenListType::const_iterator it); // Create a new fiber with the good number of samples
 
     /** Variables */
     GroupType::Pointer inputFibers;
     GroupType::Pointer outputFibers;
     int nbSamples;
 
+protected:
+
+    /** Constructor & Destructor */
+    FiberParametrization();
+    ~FiberParametrization();
 
 };
 

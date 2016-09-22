@@ -1,22 +1,26 @@
 #include "fiberparametrization.h"
 #include "fiberparametrization.hxx"
 #include "fiberprocessing.h"
+#include "vtkSmartPointer.h"
 #include "fiberparametrizationCLP.h"
 int main (int argc, char* argv[])
 {
     PARSE_ARGS;
 
-    if(argc < 4)
+    if(argc < 3)
     {
-        std::cerr << "Required: [Executable] [inputfilename path] [outputfilename path]" << std::endl;
+        std::cerr << "Required: [Executable] -- inputfilename [inputfilename path] --outputfilename [outputfilename path] -N [Number of Samples]" << std::endl;
         return EXIT_FAILURE;
     }
 
 
     GroupType::Pointer test;
     test = readFiberFile(inputFiber);
-    SamplingFilter Filter(nbSample,test);
-    writeFiberFile(outputFiber,Filter.GetOutput());
+    vtkSmartPointer<FiberParametrization> Filter = vtkSmartPointer<FiberParametrization>::New();
+    Filter->SetInput(test);
+    Filter->SetnbSamples(nbSample);
+    
+    writeFiberFile(outputFiber,Filter->GetOutput());
 
     // Read all the data from the file
      vtkSmartPointer<vtkXMLPolyDataReader> reader = vtkSmartPointer<vtkXMLPolyDataReader>::New();
@@ -25,7 +29,7 @@ int main (int argc, char* argv[])
 
     vtkSmartPointer<vtkPolyData> linesPolyData = reader->GetOutput();
 
-    std::cout << "There is " << linesPolyData->GetNumberOfLines() << " lines." << std::endl;
+    std::cout << "There is " << linesPolyData->GetNumberOfLines() << " fibers." << std::endl;
 
     linesPolyData->GetLines()->InitTraversal();
     vtkSmartPointer<vtkIdList> idList = vtkSmartPointer<vtkIdList>::New();

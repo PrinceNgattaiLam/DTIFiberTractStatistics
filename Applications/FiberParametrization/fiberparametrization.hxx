@@ -1,17 +1,20 @@
 
 #include "fiberprocessing.h"
+#include "fiberparametrization.h"
+#include "vtkObjectFactory.h"
 #define E(X) ((int)X)
 
-SamplingFilter::SamplingFilter(int Nb, GroupType::Pointer input){
-    this->SetInput(input);
-    this->SetNbSamples(Nb);
+vtkStandardNewMacro(FiberParametrization);
+FiberParametrization::FiberParametrization(){//int Nb, GroupType::Pointer input){
+    this->SetnbSamples(0);
     this->outputFibers=GroupType::New();
+    this->inputFibers=GroupType::New();
 }
 
 
-SamplingFilter::~SamplingFilter(){};
+FiberParametrization::~FiberParametrization(){}
 
-GroupType::Pointer SamplingFilter::GetOutput(){
+GroupType::Pointer FiberParametrization::GetOutput(){
     if(this->outputFibers.IsNotNull()) // CHECK LATER ! ! !
     {
         std::auto_ptr<ChildrenListType> children(this->inputFibers->GetChildren(0));
@@ -28,21 +31,21 @@ GroupType::Pointer SamplingFilter::GetOutput(){
     }
 
 }
-void SamplingFilter::SetInput(GroupType::Pointer input){
+void FiberParametrization::SetInput(GroupType::Pointer input){
     //TO DO: CHECK PATH
     this->inputFibers = input;
 
 }
-void SamplingFilter::SetNbSamples(int NbSamples){
+// void FiberParametrization::SetNbSamples(int NbSamples){
 
-    //TO DO: CHECK VALUE
+//     //TO DO: CHECK VALUE
 
-    this->nbSamples = NbSamples;
+//     this->nbSamples = NbSamples;
 
-}
+// }
 
 
-void SamplingFilter::sampling_unit(ChildrenListType::const_iterator it){
+void FiberParametrization::sampling_unit(ChildrenListType::const_iterator it){
 
     itk::SpatialObject<3>* tmp = (*it).GetPointer();
     itk::DTITubeSpatialObject<3>* tube = dynamic_cast<itk::DTITubeSpatialObject<3>* >(tmp);
@@ -57,7 +60,11 @@ void SamplingFilter::sampling_unit(ChildrenListType::const_iterator it){
     itk::DTITubeSpatialObject<3>::Pointer dtiTube = itk::DTITubeSpatialObject<3>::New();
     std::vector<DTIPointType> pointsToAdd;
 
-    double step = (float) (nbPtOnFiber-1)/(this->nbSamples-1);
+    double step;
+    if(this->nbSamples > 1)
+        step = (float) (nbPtOnFiber-1)/(this->nbSamples-1);
+    else
+        step = 0;
     for (unsigned int k = 0; k < this->nbSamples; k++)
     {
         DTIPointType newDtiPt;
@@ -67,6 +74,7 @@ void SamplingFilter::sampling_unit(ChildrenListType::const_iterator it){
 
         if(E((k*step))<(nbPtOnFiber-1))
         {
+
             DTIPointType dtiPt0 = pts[E((k*step))];          DTIPointType dtiPt1 = pts[E((k*step))+1];
             p0   =   dtiPt0.GetPosition();                   p1  =   dtiPt1.GetPosition();
             fa0  =   dtiPt0.GetField("FA");                  fa1 =   dtiPt1.GetField("FA");
