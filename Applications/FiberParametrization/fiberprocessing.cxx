@@ -193,6 +193,7 @@ void writeFiberFile(const std::string & filename, GroupType::Pointer fibergroup)
                 tensorsdata->InsertNextTupleValue(vtktensor);
 
             }
+            
             polydata->InsertNextCell(VTK_POLY_LINE, nPointsOnFiber, ids->GetPointer(currentId));
         }
 

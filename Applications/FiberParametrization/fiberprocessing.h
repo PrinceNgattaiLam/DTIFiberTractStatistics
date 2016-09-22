@@ -9,12 +9,12 @@
 #include <vtkCellArray.h>
 #include <vtkSmartPointer.h>
 #include <vtkPolyData.h>
-#include <itkSymmetricSecondRankTensor.h>
 #include <vtkDataArray.h>
 #include <vtkPointData.h>
 #include <vtkFloatArray.h>
 
 // ITK INCLUDES
+#include <itkSymmetricSecondRankTensor.h>
 #include <itkGroupSpatialObject.h>
 #include <itkExceptionObject.h>
 #include <itkSpatialObjectReader.h>
