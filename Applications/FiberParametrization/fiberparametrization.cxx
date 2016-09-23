@@ -1,8 +1,8 @@
-#include "FiberParametrizer.h"
-#include "FiberParametrizer.hxx"
+#include "fiberparametrization.h"
+#include "fiberparametrization.hxx"
 #include "fiberprocessing.h"
 #include "vtkSmartPointer.h"
-#include "FiberParametrizerCLP.h"
+#include "fiberparametrizationCLP.h"
 int main (int argc, char* argv[])
 {
     PARSE_ARGS;
@@ -16,7 +16,7 @@ int main (int argc, char* argv[])
 
     GroupType::Pointer test;
     test = readFiberFile(inputFiber);
-    vtkSmartPointer<FiberParametrizer> Filter = vtkSmartPointer<FiberParametrizer>::New();
+    vtkSmartPointer<FiberParametrization> Filter = vtkSmartPointer<FiberParametrization>::New();
     Filter->SetInput(test);
     Filter->SetnbSamples(nbSample);
     

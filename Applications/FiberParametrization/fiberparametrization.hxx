@@ -1,22 +1,22 @@
 
 #include "fiberprocessing.h"
-#include "FiberParametrizer.h"
+#include "fiberparametrization.h"
 #include "vtkObjectFactory.h"
 #define E(X) ((int)X)  //We define the integer part of a variable X
 
-vtkStandardNewMacro(FiberParametrizer);
+vtkStandardNewMacro(FiberParametrization);
 
 
-FiberParametrizer::FiberParametrizer(){
+FiberParametrization::FiberParametrization(){
     this->SetnbSamples(0);
     this->outputFibers=GroupType::New();
     this->inputFibers=GroupType::New();
 }
 
 
-FiberParametrizer::~FiberParametrizer(){}
+FiberParametrization::~FiberParametrization(){}
 
-GroupType::Pointer FiberParametrizer::GetOutput(){
+GroupType::Pointer FiberParametrization::GetOutput(){
     if(this->outputFibers.IsNotNull()) // CHECK LATER ! ! !
     {
         std::auto_ptr<ChildrenListType> children(this->inputFibers->GetChildren(0));
@@ -33,7 +33,7 @@ GroupType::Pointer FiberParametrizer::GetOutput(){
     }
 
 }
-void FiberParametrizer::SetInput(GroupType::Pointer input){
+void FiberParametrization::SetInput(GroupType::Pointer input){
     //TO DO: CHECK INPUT
 
     if(this->inputFibers.IsNotNull())
@@ -48,7 +48,7 @@ void FiberParametrizer::SetInput(GroupType::Pointer input){
 }
 
 
-void FiberParametrizer::sampling_unit(ChildrenListType::const_iterator it){
+void FiberParametrization::sampling_unit(ChildrenListType::const_iterator it){
 
     // We get the
     itk::SpatialObject<3>* tmp = (*it).GetPointer();
@@ -137,6 +137,5 @@ void FiberParametrizer::sampling_unit(ChildrenListType::const_iterator it){
 //    }
     dtiTube->SetPoints(pointsToAdd); // We store all the points corresponding to one fiber sampled, in a spatial object
     this->outputFibers->AddSpatialObject(dtiTube);// And we add this spatial object to the Output Data
-}
 }
 

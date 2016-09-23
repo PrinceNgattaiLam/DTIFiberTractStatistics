@@ -18,18 +18,18 @@ typedef itk::DTITubeSpatialObjectPoint<3> DTIPointType;
 
 
 /**
- *  Class FiberParametrizer:
+ *  Class FiberParametrization:
  *  **************************
  *  This class defines a type of object able to resample a fiberbundle, by different ways:
  *  1- Simple: At the end each fiber of the bundle has the same number of equidistants points, this number being an input
  *  2-
  */
-class FiberParametrizer : public vtkPolyDataAlgorithm
+class FiberParametrization : public vtkPolyDataAlgorithm
 {
 public:
     /** Conventions for a VTK Class*/
-     vtkTypeMacro(FiberParametrizer,vtkPolyDataAlgorithm);
-     static FiberParametrizer *New();
+     vtkTypeMacro(FiberParametrization,vtkPolyDataAlgorithm);
+     static FiberParametrization *New();
 
      /** Set & Get*/
      vtkSetMacro(nbSamples, int); // Set the number of samples for our sampling
@@ -50,8 +50,8 @@ private:
 protected:
 
     /** Constructor & Destructor */
-    FiberParametrizer();
-    ~FiberParametrizer();
+    FiberParametrization();
+    ~FiberParametrization();
 
 };
 
