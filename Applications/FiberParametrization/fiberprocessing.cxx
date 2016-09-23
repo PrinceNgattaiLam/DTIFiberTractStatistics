@@ -2,8 +2,6 @@
 
 GroupType::Pointer readFiberFile(std::string filename)
 {
-
-
     if (filename.rfind(".vt")!= std::string::npos)
     {
         // Build up the principal data structure for fiber tracts
@@ -11,18 +9,17 @@ GroupType::Pointer readFiberFile(std::string filename)
 
         vtkSmartPointer<vtkPolyData> fibdata=vtkSmartPointer<vtkPolyData>::New();
 
-        /** We read the vtk data */
-        if (filename.rfind(".vtk")!=std::string::npos)
+        if (filename.rfind(".vtk")!=std::string::npos) //if it's a .vtk file
         {
-            vtkSmartPointer<vtkPolyDataReader> reader = vtkPolyDataReader::New();
+            vtkSmartPointer<vtkPolyDataReader> reader = vtkPolyDataReader::New(); //We use vtkPolyDataReader
             reader->SetFileName(filename.c_str());
             reader->Update();
             fibdata = reader->GetOutput();
 
         }
-        else if (filename.rfind(".vtp")!=std::string::npos)
+        else if (filename.rfind(".vtp")!=std::string::npos)//if it's a .vtp file
         {
-            vtkSmartPointer<vtkXMLPolyDataReader> reader= vtkXMLPolyDataReader::New();
+            vtkSmartPointer<vtkXMLPolyDataReader> reader= vtkXMLPolyDataReader::New();//We use vtkXMLPolyDataReader
             reader->SetFileName(filename.c_str());
             reader->Update();
             fibdata = reader->GetOutput();
@@ -32,7 +29,7 @@ GroupType::Pointer readFiberFile(std::string filename)
             throw itk::ExceptionObject("Unknown file format for fibers");
         }
 
-        // Definition of some useful types
+        // TYPEDEFS
         typedef  itk::SymmetricSecondRankTensor<double,3> ITKTensorType;
         typedef  ITKTensorType::EigenValuesArrayType LambdaArrayType;
 
@@ -47,7 +44,7 @@ GroupType::Pointer readFiberFile(std::string filename)
             vtkSmartPointer<vtkPoints> points = fib->GetPoints(); // "points" contains all the points of one fiber fib
             std::vector<DTIPointType> pointsToAdd;
 
-            vtkSmartPointer<vtkDataArray> fibtensordata = fibdata->GetPointData()->GetTensors(); // WHY IN THE LOOP?????????????????????????
+            vtkSmartPointer<vtkDataArray> fibtensordata = fibdata->GetPointData()->GetTensors();
 
             for(int j = 0; j < points->GetNumberOfPoints(); ++j) // For each point in the fiber "fib"
             {
@@ -56,15 +53,13 @@ GroupType::Pointer readFiberFile(std::string filename)
 
                 DTIPointType pt;
                 // Convert from RAS to LPS for vtk
-                pt.SetPosition(coordinates[0], coordinates[1], coordinates[2]);
-                pt.SetRadius(0.5);
-                pt.SetColor(0.0, 0.0, 1.0);
+                pt.SetPosition(coordinates[0], coordinates[1], coordinates[2]); // We store its coordinates
+                pt.SetRadius(0.5); // We set a radius of 0.5 by default
+                pt.SetColor(0.0, 0.0, 1.0); // We set blue color by default
 
                 if (fibtensordata != NULL)
                 {
-
                     double * vtktensor = fibtensordata->GetTuple9(pindex);
-
                     float floattensor[6];
                     ITKTensorType itktensor;
 
@@ -75,13 +70,14 @@ GroupType::Pointer readFiberFile(std::string filename)
                     floattensor[4] = itktensor[4] = vtktensor[5];
                     floattensor[5] = itktensor[5] = vtktensor[8];
 
-                    pt.SetTensorMatrix(floattensor);
+                    pt.SetTensorMatrix(floattensor); // We conpute the Tensor Matrix for each point
 
                     LambdaArrayType lambdas;
 
-                    // Need to do eigenanalysis of the tensor
-                    itktensor.ComputeEigenValues(lambdas);
 
+                    itktensor.ComputeEigenValues(lambdas); // Need to do eigenanalysis of the tensor
+
+                    // We compute the differents diffusivity values according to their mathematics expressions
                     float md = (lambdas[0] + lambdas[1] + lambdas[2])/3;
                     float fa = sqrt(1.5) * sqrt((lambdas[0] - md)*(lambdas[0] - md) +
                             (lambdas[1] - md)*(lambdas[1] - md) +
@@ -97,6 +93,7 @@ GroupType::Pointer readFiberFile(std::string filename)
                     float ad = lambdas[2];
                     float rd = (lambdas[0] + lambdas[1])/2;
 
+                    // We create the corresponding fields and add theirs values
                     pt.AddField("FA",fa);
                     pt.AddField("MD",md);
                     //pt.AddField("FRO",fro);
@@ -106,14 +103,12 @@ GroupType::Pointer readFiberFile(std::string filename)
                     pt.AddField("RD",rd);
                     //pt.AddField("GA",ga);
                 }
-                pointsToAdd.push_back(pt);
+                pointsToAdd.push_back(pt); // We add the point to our vector
             }
 
-            dtiTube->SetPoints(pointsToAdd);
-            fibergroup->AddSpatialObject(dtiTube);
+            dtiTube->SetPoints(pointsToAdd);// We set all the points corresponding to one fiber in a Saptial Object
+            fibergroup->AddSpatialObject(dtiTube);// And we add this Spatial Object in our Group of Spatial Object
         }
-        //       std::cout << "# of points with scalar values: " << scalarCount << "; # of points without scalar values: " << nonscalarCount << "\n" << std::endl;
-
 
         return fibergroup;
     } // end process .vtk .vtp

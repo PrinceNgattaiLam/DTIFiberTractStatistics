@@ -1,46 +1,57 @@
 #ifndef FIBERTRACTSAMPLING_H
 #define FIBERTRACTSAMPLING_H
+
+//VTK INCLUDES
 #include <vtkPolyDataReader.h>
-#include <itkGroupSpatialObject.h>
 #include <vtkCellArray.h>
 #include <vtkSmartPointer.h>
 #include <vtkPolyDataAlgorithm.h>
+
+//ITK INCLUDES
+#include <itkGroupSpatialObject.h>
 #include <itkDTITubeSpatialObject.h>
 
+//TYPEDEFS
 typedef itk::GroupSpatialObject<3> GroupType;
 typedef GroupType::ChildrenListType ChildrenListType;
 typedef itk::DTITubeSpatialObjectPoint<3> DTIPointType;
 
-class FiberParametrization : public vtkPolyDataAlgorithm 
+
+/**
+ *  Class FiberParametrizer:
+ *  **************************
+ *  This class defines a type of object able to resample a fiberbundle, by different ways:
+ *  1- Simple: At the end each fiber of the bundle has the same number of equidistants points, this number being an input
+ *  2-
+ */
+class FiberParametrizer : public vtkPolyDataAlgorithm
 {
 public:
     /** Conventions for a VTK Class*/
-     vtkTypeMacro(FiberParametrization,vtkPolyDataAlgorithm);
-     static FiberParametrization *New();
+     vtkTypeMacro(FiberParametrizer,vtkPolyDataAlgorithm);
+     static FiberParametrizer *New();
 
      /** Set & Get*/
-     vtkSetMacro(nbSamples, int);
-
+     vtkSetMacro(nbSamples, int); // Set the number of samples for our sampling
 
     /** Main Functions */
-    GroupType::Pointer GetOutput();
-    void SetInput(GroupType::Pointer input);
-    //void SetNbSamples(int nbSamples);
+    GroupType::Pointer GetOutput(); // Get the output data (data sampled)
+    void SetInput(GroupType::Pointer input); // Set the input data (data to sample)
 
 private:
     /** Internal Functions*/
-    void sampling_unit(ChildrenListType::const_iterator it); // Create a new fiber with the good number of samples
+    void sampling_unit(ChildrenListType::const_iterator it); // Sample one fiber with the the good number of samples and add this sampled fiber to the output
 
     /** Variables */
-    GroupType::Pointer inputFibers;
-    GroupType::Pointer outputFibers;
-    int nbSamples;
+    GroupType::Pointer inputFibers; // Input - Data to sample
+    GroupType::Pointer outputFibers; // Output - Data sampled
+    int nbSamples; // Parameter of sampling
 
 protected:
 
     /** Constructor & Destructor */
-    FiberParametrization();
-    ~FiberParametrization();
+    FiberParametrizer();
+    ~FiberParametrizer();
 
 };
 
