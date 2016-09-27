@@ -8,12 +8,22 @@ vtkStandardNewMacro(FiberParametrization);
 
 
 FiberParametrization::FiberParametrization(){
-    this->SetnbSamples(0);
+    this->SetNbSamples(0);
     this->outputFibers=GroupType::New();
     this->inputFibers=GroupType::New();
 }
 
-
+void FiberParametrization::SetNbSamples(int nbSamples)
+{
+    if(nbSamples>-1)
+    {
+        this->nbSamples = nbSamples;
+    }
+    else
+    {
+        throw itk::ExceptionObject("Number of samples must be an integer greater or equal to 0");
+    }
+}
 FiberParametrization::~FiberParametrization(){}
 
 GroupType::Pointer FiberParametrization::GetOutput(){
@@ -124,17 +134,7 @@ void FiberParametrization::sampling_unit(ChildrenListType::const_iterator it){
         pointsToAdd.push_back(newDtiPt); // We add the point to our vector
     }
 
-// Code de TEST
-//    float distance;
-//    std::cout<<"Distance pour une fibre"<<std::endl;
-//    for(int i=1; i<pointsToAdd.size(); i++)
-//    {
-//        DTIPointType dtiPt0_test = pointsToAdd[i-1];          DTIPointType dtiPt1_test = pointsToAdd[i];
-//        itk::Point<double,3> p0_test = dtiPt0_test.GetPosition();
-//        itk::Point<double,3> p1_test = dtiPt1_test.GetPosition();
-//        float distance = sqrt((p0_test[0]-p1_test[0])*(p0_test[0]-p1_test[0])+(p0_test[1]-p1_test[1])*(p0_test[1]-p1_test[1])+(p0_test[2]-p1_test[2])*(p0_test[2]-p1_test[2]));
-//        std::cout<<"distance = "<<distance<<std::endl;
-//    }
+
     dtiTube->SetPoints(pointsToAdd); // We store all the points corresponding to one fiber sampled, in a spatial object
     this->outputFibers->AddSpatialObject(dtiTube);// And we add this spatial object to the Output Data
 }

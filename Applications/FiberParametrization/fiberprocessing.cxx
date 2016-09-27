@@ -35,6 +35,10 @@ GroupType::Pointer readFiberFile(std::string filename)
 
         // Iterate over VTK data
         const int nfib = fibdata->GetNumberOfCells(); // "nfib" = number of fibers in the input fiber bundle
+        if(nfib<1)
+        {
+            throw itk::ExceptionObject("Empty Input Fibers");
+        }
         int pindex = -1;
         for(int i = 0; i < nfib; ++i)
         {

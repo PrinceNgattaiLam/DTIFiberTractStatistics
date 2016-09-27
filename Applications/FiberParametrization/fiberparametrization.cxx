@@ -18,7 +18,7 @@ int main (int argc, char* argv[])
     test = readFiberFile(inputFiber);
     vtkSmartPointer<FiberParametrization> Filter = vtkSmartPointer<FiberParametrization>::New();
     Filter->SetInput(test);
-    Filter->SetnbSamples(nbSample);
+    Filter->SetNbSamples(nbSample);
     
     writeFiberFile(outputFiber,Filter->GetOutput());
 
@@ -33,12 +33,7 @@ int main (int argc, char* argv[])
 
     linesPolyData->GetLines()->InitTraversal();
     vtkSmartPointer<vtkIdList> idList = vtkSmartPointer<vtkIdList>::New();
-   /* while(linesPolyData->GetLines()->GetNextCell(idList))
-      {
-      std::cout << "Line #"<<i<< " has " << idList->GetNumberOfIds() << " points." << std::endl;
-      std::cout << std::endl;
-      i++;
-      }*/
+
     return EXIT_SUCCESS;
 
     return 0;

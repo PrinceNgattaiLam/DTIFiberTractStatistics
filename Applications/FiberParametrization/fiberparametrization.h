@@ -31,12 +31,12 @@ public:
      vtkTypeMacro(FiberParametrization,vtkPolyDataAlgorithm);
      static FiberParametrization *New();
 
-     /** Set & Get*/
-     vtkSetMacro(nbSamples, int); // Set the number of samples for our sampling
+
 
     /** Main Functions */
     GroupType::Pointer GetOutput(); // Get the output data (data sampled)
     void SetInput(GroupType::Pointer input); // Set the input data (data to sample)
+    void SetNbSamples(int nbSamples); // Set the number of samples for our sampling
 
 private:
     /** Internal Functions*/
