@@ -12,10 +12,10 @@
       <label>I/O</label>
         <geometry>
             <name>inputFiber</name>
-            <label>Path to input fibers</label>
+            <label>Input fibers</label>
             <channel>input</channel>
             <longflag>input</longflag>
-            <description>Input fibers to be sampled (.vtk or .vtp)</description>
+            <description>Input fibers</description>
         </geometry>
         <integer>
               <name>nbLandmarks</name>
@@ -31,8 +31,23 @@
             <label>Output Volume</label>
             <channel>output</channel>
             <longflag>output</longflag>
-            <description>Output fibers to be sampled (.vtk or .vtp)</description>
+            <description>Output fibers</description>
         </geometry>
+        <geometry>
+            <name>modelFiber</name>
+            <label>Model Fibers</label>
+            <channel>input</channel>
+            <longflag>model</longflag>
+            <description>Model fibers</description>
+        </geometry>
+        <file>
+            <name>fcsvFile</name>
+            <label>FCSV File</label>
+            <channel>input</channel>
+            <longflag>fcsv</longflag>
+            <description>FCSV File that contains the landmarks to compute</description>
+            <default></default>
+        </file>
       </parameters>
       <parameters>
         <label>Features</label>
