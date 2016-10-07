@@ -387,7 +387,7 @@ void FiberFeaturesCreator::update_methods_state()
 	landmarkOn = true;
     torsionsOn = false;
     curvaturesOn = false;
-    averageOn = true;
+    averageOn = false;
 }
 
 // void FiberFeaturesCreator::read_fcsv_file()
@@ -397,11 +397,12 @@ void FiberFeaturesCreator::update_methods_state()
 
 void FiberFeaturesCreator::write_landmarks_file()
 {
-	std::ofstream fcsvfile;
-	fcsvfile.open(this->fcsvfilename.c_str());
 
 	if (averageOn)
 	{
+
+		std::ofstream fcsvfile;
+		fcsvfile.open(this->fcsvfilename.c_str());
 		std::cout<<"---Writting FCSV File to"<<this->fcsvfilename.c_str()<<std::endl;
 		fcsvfile << "# Markups fiducial file version = 4.5\n";
 		fcsvfile << "# CoordinateSystem = 0\n";
@@ -415,6 +416,21 @@ void FiberFeaturesCreator::write_landmarks_file()
 	}
 	else
 	{
+		vtkSmartPointer<vtkPoints> pointsToWrite = vtkSmartPointer<vtkPoints>::New();
+		vtkSmartPointer<vtkPolyData> polydata = vtkSmartPointer<vtkPolyData>::New();
+
+		for (int i = 0; i < this->landmarks.size(); ++i)
+		{
+			for (int j = 0; j < this->nbLandmarks; ++j)
+			{
+				pointsToWrite->InsertNextPoint(this->landmarks[i]->GetPoint(j)[0],this->landmarks[i]->GetPoint(j)[1],this->landmarks[i]->GetPoint(j)[2]);
+			}
+		}
+		polydata->SetPoints(pointsToWrite);
+		vtkSmartPointer<vtkXMLPolyDataWriter> writer =  vtkSmartPointer<vtkXMLPolyDataWriter>::New();
+  		writer->SetFileName("/home/dprince/landmarks.vtp");
+  		writer->SetInputData(polydata);
+  		writer->Write();
 
 	}
 
