@@ -24,6 +24,10 @@ public:
 
     void SetInput(vtkSmartPointer<vtkPolyData> input, vtkSmartPointer<vtkPolyData> model, std::string fcsvfile);
     void SetNbLandmarks(int nbLandmarks);
+    void SetLandmarksOn();
+    void SetTorsionOn();
+    void SetCurvatureOn();
+    void SetAverageOn();
     void Update();
     void WriteOutputFile(std::string filename);	// Method Curvature;
 
@@ -61,7 +65,6 @@ private:
     void compute_landmark_feature();	// Method landmark
     void compute_torsions_feature();	// Method Torsions;
     void compute_curvatures_feature();	// Method Curvature;
-    void update_methods_state();
     void init_output();
     //void read_fcsv_file();
     void write_landmarks_file();

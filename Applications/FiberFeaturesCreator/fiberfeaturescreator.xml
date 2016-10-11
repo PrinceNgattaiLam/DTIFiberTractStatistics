@@ -50,17 +50,38 @@
         </file>
       </parameters>
       <parameters>
-        <label>Features</label>
+        <label>Features to compute</label>
+        <boolean>
+          <name>landmarkOn</name>
+          <longflag>landmarks</longflag>
+          <label>Landmarks feature</label>
+          <description>Compute landmarks distance feature</description>
+          <default>false</default>
+        </boolean>
+        <boolean>
+          <name>curvatureOn</name>
+          <longflag>curvature</longflag>
+          <label>Curvature feature</label>
+          <description>Compute curvature features</description>
+          <default>false</default>
+        </boolean>
+        <boolean>
+          <name>torsionOn</name>
+          <longflag>torsion</longflag>
+          <label>Torsion feature</label>
+          <description>Compute torsions feature</description>
+          <default>false</default>
+        </boolean>
+      </parameters>
+      <parameters>
         <string-enumeration>
-          <name>FeaturesChoice</name>
-          <flag>f</flag>
-          <longflag>features</longflag>
-          <description>Features to compute</description>
-          <label>Choice of Features to computer</label>
-          <default>Landmarks</default>
-          <element>Landmarks</element>
-          <element>Curvatures</element>
-          <element>Torsions</element>
+        <name>landmarksOption</name>
+        <longflag>option</longflag>
+        <description>Option for the landmarks feature</description>
+        <label>Landmarks Option</label>
+        <default name="Average">average</default>
+        <element name="Average">average</element>
+        <element name="Relative">relative</element>
         </string-enumeration>
-    </parameters>
+      </parameters>
 </executable>

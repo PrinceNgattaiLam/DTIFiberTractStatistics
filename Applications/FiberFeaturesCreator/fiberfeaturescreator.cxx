@@ -22,11 +22,18 @@ int main (int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
+    if(!fcsvFile.empty() && fcsvFile.rfind(".fcsv")==std::string::npos)
+    {
+        std::cerr << "Wrong File Format, must be a .fcsv file" << std::endl;
+        return EXIT_FAILURE;
+    }
+
     if(nbLandmarks<0)
     {
         std::cerr << "wrong value for the number of Landmarks, must be an integer greater or equal to 0" << std::endl;
         return EXIT_FAILURE;
     }
+
 
 	vtkSmartPointer<vtkPolyDataReader> inputreader = vtkSmartPointer<vtkPolyDataReader>::New();
 	inputreader->SetFileName(inputFiber.c_str());
@@ -38,9 +45,19 @@ int main (int argc, char *argv[])
 
 	vtkSmartPointer<FiberFeaturesCreator> test = vtkSmartPointer<FiberFeaturesCreator>::New();
 	
+
+
+    if(landmarkOn)
+        test->SetLandmarksOn();
+    if(curvatureOn)
+        test->SetCurvatureOn();
+    if(torsionOn)
+        test->SetTorsionOn();
+    if(landmarksOption=="average")
+        test->SetAverageOn();
+
     test->SetInput(inputreader->GetOutput(),modelreader->GetOutput(),fcsvFile.c_str());
-    
-	test->SetNbLandmarks(nbLandmarks);
+    test->SetNbLandmarks(nbLandmarks);
 
 
 	test->Update();

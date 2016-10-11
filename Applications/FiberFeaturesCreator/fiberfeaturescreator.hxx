@@ -1,6 +1,10 @@
 #include "fiberfeaturescreator.h"
 #include "vtkCurvatures.h"
 #include "vtkObjectFactory.h"
+#include <vtkSimplePointsWriter.h>
+#include <vtkUnstructuredGrid.h>
+#include <vtkXMLUnstructuredGridWriter.h>
+#include <vtkTetra.h>
 #include <string> 
 #include <fstream>
 
@@ -31,8 +35,10 @@ void FiberFeaturesCreator::SetInput(vtkSmartPointer<vtkPolyData> input, vtkSmart
 	if(fcsvfile.empty())
 	{
 		this->fcsvOn = false;
-		this->fcsvfilename = "/home/dprince/landmarks.fcsv";
-
+		if(this->averageOn)
+			this->fcsvfilename = "/work/dprince/Projects/DTIFiberTractStatistics/Applications/FiberFeaturesCreator/Outputs/landmarks.fcsv";
+		else
+			this->fcsvfilename = "/work/dprince/Projects/DTIFiberTractStatistics/Applications/FiberFeaturesCreator/Outputs/landmarks.vtp";
 	}
 	else
 	{
@@ -53,7 +59,6 @@ void FiberFeaturesCreator::init_output()
 void FiberFeaturesCreator::Update()
 {
 	this->init_output();
-	this->update_methods_state();
 	if(fcsvOn)
 	{
 		std::cout<<std::endl<<std::endl;
@@ -382,19 +387,22 @@ void FiberFeaturesCreator::compute_curvatures_feature()
 	
 }
 
-void FiberFeaturesCreator::update_methods_state()
+void FiberFeaturesCreator::SetLandmarksOn()
 {
-	landmarkOn = true;
-    torsionsOn = false;
-    curvaturesOn = false;
-    averageOn = false;
+	this->landmarkOn = true;
 }
-
-// void FiberFeaturesCreator::read_fcsv_file()
-// {
-	
-// }
-
+void FiberFeaturesCreator::SetTorsionOn()
+{
+	this->torsionsOn = true;
+}
+void FiberFeaturesCreator::SetCurvatureOn()
+{
+	this->curvaturesOn = true;
+}
+void FiberFeaturesCreator::SetAverageOn()
+{
+	this->averageOn = true;
+}
 void FiberFeaturesCreator::write_landmarks_file()
 {
 
@@ -403,7 +411,7 @@ void FiberFeaturesCreator::write_landmarks_file()
 
 		std::ofstream fcsvfile;
 		fcsvfile.open(this->fcsvfilename.c_str());
-		std::cout<<"---Writting FCSV File to"<<this->fcsvfilename.c_str()<<std::endl;
+		std::cout<<"---Writting FCSV Landmarks File to "<<this->fcsvfilename.c_str()<<std::endl;
 		fcsvfile << "# Markups fiducial file version = 4.5\n";
 		fcsvfile << "# CoordinateSystem = 0\n";
 		fcsvfile << "# columns = id,x,y,z,ow,ox,oy,oz,vis,sel,lock,label,desc,associatedNodeID\n";
@@ -416,23 +424,37 @@ void FiberFeaturesCreator::write_landmarks_file()
 	}
 	else
 	{
+		std::cout<<"---Writting VTP Landmarks File to "<<this->fcsvfilename.c_str()<<std::endl;
 		vtkSmartPointer<vtkPoints> pointsToWrite = vtkSmartPointer<vtkPoints>::New();
 		vtkSmartPointer<vtkPolyData> polydata = vtkSmartPointer<vtkPolyData>::New();
-
+	  	vtkSmartPointer<vtkCellArray> vertices = vtkSmartPointer<vtkCellArray>::New();
+		polydata->Allocate();
+		
+			vtkSmartPointer<vtkIdList> pid = vtkSmartPointer<vtkIdList>::New();
 		for (int i = 0; i < this->landmarks.size(); ++i)
 		{
 			for (int j = 0; j < this->nbLandmarks; ++j)
 			{
-				pointsToWrite->InsertNextPoint(this->landmarks[i]->GetPoint(j)[0],this->landmarks[i]->GetPoint(j)[1],this->landmarks[i]->GetPoint(j)[2]);
+				pid->InsertNextId(pointsToWrite->InsertNextPoint(this->landmarks[i]->GetPoint(j)[0],this->landmarks[i]->GetPoint(j)[1],this->landmarks[i]->GetPoint(j)[2]));
 			}
 		}
 		polydata->SetPoints(pointsToWrite);
+		polydata->InsertNextCell(VTK_POLY_VERTEX, pid);
+		//polydata->SetVerts(vertices);
 		vtkSmartPointer<vtkXMLPolyDataWriter> writer =  vtkSmartPointer<vtkXMLPolyDataWriter>::New();
-  		writer->SetFileName("/home/dprince/landmarks.vtp");
+		//vtkSmartPointer<vtkSimplePointsWriter> writer = vtkSmartPointer<vtkSimplePointsWriter>::New();
+  		writer->SetFileName(this->fcsvfilename.c_str());
   		writer->SetInputData(polydata);
-  		writer->Write();
+  // 		vtkIdType cellId, numCells;
+  // 		numCells = polydata->GetNumberOfCells();
+  // 		for (cellId=0; cellId < numCells; cellId++)
+		// {
+	 //    	std::cout<<polydata->GetCellType(cellId)<<std::endl;
+		// }
 
-	}
+  		writer->Update();
+  	}
+
 
 
 }
