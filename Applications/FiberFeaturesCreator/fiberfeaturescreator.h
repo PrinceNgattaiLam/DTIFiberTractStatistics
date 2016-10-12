@@ -29,8 +29,6 @@ public:
     void SetCurvatureOn();
     void SetAverageOn();
     void Update();
-    void WriteOutputFile(std::string filename);	// Method Curvature;
-
     vtkSmartPointer<vtkPolyData> GetOutput();
 
 

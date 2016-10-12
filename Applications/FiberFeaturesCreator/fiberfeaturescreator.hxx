@@ -1,5 +1,4 @@
 #include "fiberfeaturescreator.h"
-#include "vtkCurvatures.h"
 #include "vtkObjectFactory.h"
 #include <vtkSimplePointsWriter.h>
 #include <vtkUnstructuredGrid.h>
@@ -133,42 +132,11 @@ void FiberFeaturesCreator::Update()
 
 }
 
-// vtkSmartPointer<vtkPolyData> FiberFeaturesCreator::GetOutput()
-// {
-// 	return this->outputFibers;
-// }
-
-
-	
-	
-void FiberFeaturesCreator::WriteOutputFile(std::string filename)
+vtkSmartPointer<vtkPolyData> FiberFeaturesCreator::GetOutput()
 {
-	if (filename.rfind(".vtk") != std::string::npos)
-        {
-            vtkSmartPointer<vtkPolyDataWriter> fiberwriter = vtkPolyDataWriter::New();
-            //       fiberwriter->SetFileTypeToBinary();
-            fiberwriter->SetFileName(filename.c_str());
-	#if (VTK_MAJOR_VERSION < 6)
-	            fiberwriter->SetInput(this->outputFibers);
-	#else
-	            fiberwriter->SetInputData(this->outputFibers);
-	#endif
-	            fiberwriter->Update();
-	        }
-	        // XML
-	        else if (filename.rfind(".vtp") != std::string::npos)
-	        {
-	            vtkSmartPointer<vtkXMLPolyDataWriter> fiberwriter = vtkXMLPolyDataWriter::New();
-	            fiberwriter->SetFileName(filename.c_str());
-	#if (VTK_MAJOR_VERSION < 6)
-	            fiberwriter->SetInput(this->outputFibers);
-	#else
-	            fiberwriter->SetInputData(this->outputFibers);
-	#endif
-	            fiberwriter->Update();
-        }
+	return this->outputFibers;
+}
 
-}	
 
 void FiberFeaturesCreator::compute_landmarks_from_model()//std::vector<std::vector<vtkPoints*> > compute_landmarks()
 {
@@ -181,6 +149,7 @@ void FiberFeaturesCreator::compute_landmarks_from_model()//std::vector<std::vect
 	int NbPtCurrentFiber;
 	int NbFibers = this->modelFibers->GetNumberOfCells();
 	int k = 0;
+
 	for(int i=0; i<NbFibers; i++)
 	{
 		vtkFloatArray* arclengthArrayCurrent = vtkFloatArray::New();
@@ -212,6 +181,7 @@ void FiberFeaturesCreator::compute_landmarks_from_model()//std::vector<std::vect
 
 		this->landmarks.push_back(landmarksPtToAdd);
 	}
+	puts("3");
 
 
 
@@ -321,18 +291,18 @@ void FiberFeaturesCreator::compute_landmark_feature()
 		for(int i=0; i<NbFibers; i++)
 		{
 			double* p1 = new double[3];
-			if(averageOn)
-			{
+//			if(averageOn)
+//			{
 				p1[0] = (this->avgLandmarks->GetPoint(k))[0];
 				p1[1] = (this->avgLandmarks->GetPoint(k))[1];
 				p1[2] = (this->avgLandmarks->GetPoint(k))[2];
-			}
-			else
-			{
-				p1[0] = (this->landmarks[i]->GetPoint(k))[0];
-				p1[1] = (this->landmarks[i]->GetPoint(k))[1];
-				p1[2] = (this->landmarks[i]->GetPoint(k))[2];
-			}
+//			}
+			// else
+			// {
+			// 	p1[0] = (this->landmarks[i]->GetPoint(k))[0];
+			// 	p1[1] = (this->landmarks[i]->GetPoint(k))[1];
+			// 	p1[2] = (this->landmarks[i]->GetPoint(k))[2];
+			// }
 			
 			vtkPoints* pts = this->inputFibers->GetCell(i)->GetPoints();
 			NbPtOnFiber = pts->GetNumberOfPoints();

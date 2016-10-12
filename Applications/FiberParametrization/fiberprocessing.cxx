@@ -133,9 +133,22 @@ void writeFiberFile(const std::string & filename, GroupType::Pointer fibergroup)
         // Build VTK data structure
         vtkSmartPointer<vtkPolyData> polydata(vtkPolyData::New());
         vtkSmartPointer<vtkFloatArray> tensorsdata(vtkFloatArray::New());
+        vtkSmartPointer<vtkFloatArray> faData(vtkFloatArray::New());
+        vtkSmartPointer<vtkFloatArray> mdData(vtkFloatArray::New());
+        vtkSmartPointer<vtkFloatArray> rdData(vtkFloatArray::New());
+        vtkSmartPointer<vtkFloatArray> l1Data(vtkFloatArray::New());
+        vtkSmartPointer<vtkFloatArray> l2Data(vtkFloatArray::New());
+        vtkSmartPointer<vtkFloatArray> l3Data(vtkFloatArray::New());
+        vtkSmartPointer<vtkFloatArray> fiberIndex(vtkFloatArray::New());
         vtkSmartPointer<vtkIdList> ids(vtkIdList::New());
         vtkSmartPointer<vtkPoints> pts(vtkPoints::New());
-
+        faData->SetName("FA");
+        mdData->SetName("MD");
+        rdData->SetName("RD");
+        l1Data->SetName("L1");
+        l2Data->SetName("L2");
+        l3Data->SetName("L3");
+        fiberIndex->SetName("FiberLocationIndex");
         tensorsdata->SetNumberOfComponents(9);
         polydata->SetPoints (pts);
 
@@ -190,6 +203,13 @@ void writeFiberFile(const std::string & filename, GroupType::Pointer fibergroup)
                 vtktensor[8] = sopt->GetTensorMatrix()[5];
 
                 tensorsdata->InsertNextTupleValue(vtktensor);
+                faData->InsertNextTuple1(sopt->GetField("FA"));
+                mdData->InsertNextTuple1(sopt->GetField("MD"));
+                rdData->InsertNextTuple1(sopt->GetField("RD"));
+                l1Data->InsertNextTuple1(sopt->GetField("L1"));
+                l2Data->InsertNextTuple1(sopt->GetField("L2"));
+                l3Data->InsertNextTuple1(sopt->GetField("L3"));
+                fiberIndex->InsertNextTuple1(k);
 
             }
             
@@ -197,6 +217,20 @@ void writeFiberFile(const std::string & filename, GroupType::Pointer fibergroup)
         }
 
         polydata->GetPointData()->SetTensors(tensorsdata);
+        polydata->GetPointData()->SetActiveScalars("FiberLocationIndex");
+        polydata->GetPointData()->SetScalars(fiberIndex);
+        polydata->GetPointData()->SetActiveScalars("FA");
+        polydata->GetPointData()->SetScalars(faData);
+        polydata->GetPointData()->SetActiveScalars("MD");
+        polydata->GetPointData()->SetScalars(mdData);
+        polydata->GetPointData()->SetActiveScalars("RD");
+        polydata->GetPointData()->SetScalars(rdData);
+        polydata->GetPointData()->SetActiveScalars("L1");
+        polydata->GetPointData()->SetScalars(l1Data);
+        polydata->GetPointData()->SetActiveScalars("L2");
+        polydata->GetPointData()->SetScalars(l2Data);
+        polydata->GetPointData()->SetActiveScalars("L3");
+        polydata->GetPointData()->SetScalars(l3Data);
 
         // Legacy
         if (filename.rfind(".vtk") != std::string::npos)
