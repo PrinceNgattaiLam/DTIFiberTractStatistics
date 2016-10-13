@@ -41,11 +41,11 @@
             <description>Model fibers</description>
         </geometry>
         <file>
-            <name>fcsvFile</name>
-            <label>FCSV File</label>
+            <name>landmarkFile</name>
+            <label>Landmarks File</label>
             <channel>input</channel>
-            <longflag>fcsv</longflag>
-            <description>FCSV File that contains the landmarks to compute</description>
+            <longflag>landmarksfile</longflag>
+            <description>File which permit to compute the containing landmarks points (.vtk, .vtp or .fcsv)</description>
             <default></default>
         </file>
       </parameters>
@@ -72,16 +72,5 @@
           <description>Compute torsions feature</description>
           <default>false</default>
         </boolean>
-      </parameters>
-      <parameters>
-        <string-enumeration>
-        <name>landmarksOption</name>
-        <longflag>option</longflag>
-        <description>Option for the landmarks feature</description>
-        <label>Landmarks Option</label>
-        <default name="Average">average</default>
-        <element name="Average">average</element>
-        <element name="Relative">relative</element>
-        </string-enumeration>
       </parameters>
 </executable>

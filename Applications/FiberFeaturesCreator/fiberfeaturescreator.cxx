@@ -5,6 +5,10 @@
 int main (int argc, char *argv[])
 {
 	PARSE_ARGS;
+
+
+    vtkSmartPointer<FiberFeaturesCreator> test = vtkSmartPointer<FiberFeaturesCreator>::New();
+
 	if(argc < 5)
     {
         std::cerr << "Required: [Executable] --input [inputfilename] --output [outputfilename] --fcsv [FCSV File] --[Feature to compute]" << std::endl;
@@ -27,22 +31,14 @@ int main (int argc, char *argv[])
         std::cerr << "Wrong Model File Format, must be a .vtk or .vtp file" << std::endl;
         return EXIT_FAILURE;
     }
-
-    if(!fcsvFile.empty() && fcsvFile.rfind(".fcsv")==std::string::npos)
-    {
-        std::cerr << "Wrong File Format, must be a .fcsv file" << std::endl;
-        return EXIT_FAILURE;
-    }
-
-
     if(nbLandmarks<0)
     {
         std::cerr << "wrong value for the number of Landmarks, must be an integer greater or equal to 0" << std::endl;
         return EXIT_FAILURE;
     }
 
-	vtkSmartPointer<FiberFeaturesCreator> test = vtkSmartPointer<FiberFeaturesCreator>::New();
 	
+
 
     if(!landmarkOn && !curvatureOn && !torsionOn)
     {
@@ -52,20 +48,23 @@ int main (int argc, char *argv[])
     if(landmarkOn)
     {
         test->SetLandmarksOn();
-        if(fcsvFile.empty()&&modelFiber.empty())
+        if(landmarkFile.empty() && modelFiber.empty())
         {
             std::cerr << "Specify a Model Fiber File or a FCSV file to compute the landmarks" << std::endl;
             return EXIT_FAILURE;
+        }
+        else if(!landmarkFile.empty() && landmarkFile.rfind(".vtk")==std::string::npos && landmarkFile.rfind(".vtp")==std::string::npos)
+        {
+                std::cerr << "Wrong File Format, must be a .fcsv, .vtk or .vtp file" << std::endl;
+                return EXIT_FAILURE;
         }
     }
     if(curvatureOn)
         test->SetCurvatureOn();
     if(torsionOn)
         test->SetTorsionOn();
-    if(landmarksOption=="average")
-        test->SetAverageOn();
 
-    test->SetInput(readVTKFile(inputFiber.c_str()),readVTKFile(modelFiber.c_str()),fcsvFile.c_str());
+    test->SetInput(inputFiber.c_str(),modelFiber.c_str(),landmarkFile.c_str());
     test->SetNbLandmarks(nbLandmarks);
 
 	test->Update();

@@ -12,8 +12,8 @@
 //#include <vtkDataSetAttributes.h>
 #include <vtkCellArray.h>
 #include <vtkPointData.h>
-
 #include <fstream>
+#include "fiberfileIO.h"
 
 class FiberFeaturesCreator : public vtkPolyDataAlgorithm
 {
@@ -22,12 +22,11 @@ public:
     vtkTypeMacro(FiberFeaturesCreator,vtkPolyDataAlgorithm);
     static FiberFeaturesCreator *New();
 
-    void SetInput(vtkSmartPointer<vtkPolyData> input, vtkSmartPointer<vtkPolyData> model, std::string fcsvfile);
+    void SetInput(std::string input, std::string model, std::string landmarksFile);
     void SetNbLandmarks(int nbLandmarks);
-    void SetLandmarksOn();
     void SetTorsionOn();
     void SetCurvatureOn();
-    void SetAverageOn();
+    void SetLandmarksOn();
     void Update();
     vtkSmartPointer<vtkPolyData> GetOutput();
 
@@ -43,22 +42,22 @@ private:
     int nbLandmarks;
     std::vector< vtkSmartPointer<vtkPoints> > curvatures;
     std::vector< vtkSmartPointer<vtkPoints> > torsions;
-    std::string fcsvfilename;
+    std::string landmarksFilename;
 
     /** Methods states*/
     bool landmarkOn;
     bool torsionsOn;
     bool curvaturesOn;
-    bool averageOn;
-    bool fcsvOn; // True - The Landmarks are defined by a .fcsv file
-    			 // False - The Landmarks are directely computed on the model Fiber in founction of the number of fibers
-
+    bool fcsvPointsOn;  // True - The Landmarks are defined by a .fcsv file
+    			         // False - The Landmarks are directely computed on the model Fiber in founction of the number of fibers
+    bool vtPointsOn;
 
 
 
     /** Internal Functions*/
     void compute_landmarks_from_model();	// Compute Landmarks Points;
-    void compute_landmarks_from_fcsvfile();
+    void compute_landmarks_from_fcsv();
+    void compute_landmarks_from_vtk_vtp();
     void compute_landmarks_average();
     void compute_landmark_feature();	// Method landmark
     void compute_torsions_feature();	// Method Torsions;
