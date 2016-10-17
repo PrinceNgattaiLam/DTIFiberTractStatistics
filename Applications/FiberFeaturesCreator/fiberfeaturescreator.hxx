@@ -7,8 +7,8 @@
 #include <string> 
 #include <fstream>
 
-#define NB_LINES_MAX 20 // We cannot choose more than 20 fcsv points
-#define NB_WORDS_MAX 15 // We cannot have more than 15 words per line
+#define NB_LINES_MAX 500 // We cannot choose more than 500 fcsv points
+#define NB_WORDS_MAX 100 // We cannot have more than 15 words per line
 
 
 vtkStandardNewMacro(FiberFeaturesCreator);
