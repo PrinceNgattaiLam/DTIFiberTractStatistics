@@ -22,6 +22,12 @@ public:
     vtkTypeMacro(FiberFeaturesCreator,vtkPolyDataAlgorithm);
     static FiberFeaturesCreator *New();
 
+    /**
+     * [SetInput description]
+     * @param input         [description]
+     * @param model         [description]
+     * @param landmarksFile [description]
+     */
     void SetInput(std::string input, std::string model, std::string landmarksFile);
     void SetNbLandmarks(int nbLandmarks);
     void SetTorsionOn();

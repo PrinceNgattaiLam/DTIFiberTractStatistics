@@ -6,7 +6,6 @@
 
 vtkStandardNewMacro(FiberParametrization);
 
-
 FiberParametrization::FiberParametrization(){
     this->SetNbSamples(0);
     this->outputFibers=GroupType::New();
