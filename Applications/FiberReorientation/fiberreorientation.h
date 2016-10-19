@@ -34,7 +34,7 @@ public:
     void SetInputData(vtkSmartPointer<vtkPolyData> input);
 
     /**
-     * Function that realign fibers
+     * Update the filter and process the output to get the output
      */
     void Update();
     /**
@@ -43,7 +43,16 @@ public:
      */
     vtkSmartPointer<vtkPolyData> GetOutput();
 
+    /**
+     * Set at state the boolean hasReversed
+     * @param state - state to set the boolean hasReversed
+     */
     void SetHasReversed(bool state);
+
+    /**
+     * Return the state of hasReversed
+     * @return - Current state of hasReversed
+     */
     bool GetHasReversed();
 
 
@@ -56,7 +65,9 @@ private:
     vtkSmartPointer<vtkPoints> outputPts;
     vtkSmartPointer<vtkPoints> startPoints;
     vtkSmartPointer<vtkPoints> endPoints;
-    bool hasReversed;
+    bool hasReversed; /** True - When one fiber has been reversed
+                          False - No Fibers has been reversed*/
+
 
 
 
