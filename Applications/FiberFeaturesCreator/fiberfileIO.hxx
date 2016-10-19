@@ -2,23 +2,38 @@
 
 
 vtkSmartPointer<vtkPolyData> readVTKFile (std::string filename)
-{
+{           // VTK
 	if (filename.rfind(".vtk") != std::string::npos)
 	{
         std::cout<<"---Reading VTK input file at "<<filename.c_str()<<std::endl;
         vtkSmartPointer<vtkPolyDataReader> fiberReader = vtkPolyDataReader::New();
         fiberReader->SetFileName(filename.c_str());
-        fiberReader->Update();
-        return fiberReader->GetOutput();
+        if(fiberReader->OpenVTKFile())
+        {
+            fiberReader->Update();
+            return fiberReader->GetOutput();
+        }
+        else
+        {
+            throw itk::ExceptionObject("File Non Valid");
+        }
+
     }
 	        // XML
     else if (filename.rfind(".vtp") != std::string::npos)
     {
         std::cout<<"---Reading VTP input file at "<<filename.c_str()<<std::endl;
-    	vtkSmartPointer<vtkXMLPolyDataReader> fiberReader = vtkXMLPolyDataReader::New();
-    	fiberReader->SetFileName(filename.c_str());
-    	fiberReader->Update();
-    	return fiberReader->GetOutput();
+        vtkSmartPointer<vtkXMLPolyDataReader> fiberReader = vtkXMLPolyDataReader::New();
+        fiberReader->SetFileName(filename.c_str());
+        if(fiberReader->CanReadFile(filename.c_str()))
+        {
+            fiberReader->Update();
+            return fiberReader->GetOutput();
+        }
+        else
+        {
+            throw itk::ExceptionObject("File Non Valid");
+        }
     }
     else
     {
