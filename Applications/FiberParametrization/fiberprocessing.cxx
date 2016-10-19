@@ -13,16 +13,33 @@ GroupType::Pointer readFiberFile(std::string filename)
         {
             vtkSmartPointer<vtkPolyDataReader> reader = vtkPolyDataReader::New(); //We use vtkPolyDataReader
             reader->SetFileName(filename.c_str());
-            reader->Update();
-            fibdata = reader->GetOutput();
+            if(reader->OpenVTKFile())
+            {
+                std::cout<<"---Reading VTK input file at "<<filename.c_str()<<std::endl;
+                reader->Update();
+                fibdata = reader->GetOutput();
+            }
+            else
+            {
+                throw itk::ExceptionObject("File Non Valid");
+            }
+
 
         }
         else if (filename.rfind(".vtp")!=std::string::npos)//if it's a .vtp file
         {
             vtkSmartPointer<vtkXMLPolyDataReader> reader= vtkXMLPolyDataReader::New();//We use vtkXMLPolyDataReader
             reader->SetFileName(filename.c_str());
-            reader->Update();
-            fibdata = reader->GetOutput();
+            if(reader->CanReadFile(filename.c_str()))
+            {
+                std::cout<<"---Reading VTP input file at "<<filename.c_str()<<std::endl;
+                reader->Update();
+                fibdata = reader->GetOutput();
+            }
+            else
+            {
+                throw itk::ExceptionObject("File Non Valid");
+            }
         }
         else
         {
@@ -235,6 +252,7 @@ void writeFiberFile(const std::string & filename, GroupType::Pointer fibergroup)
         // Legacy
         if (filename.rfind(".vtk") != std::string::npos)
         {
+        std::cout<<"---Writting VTK output File to "<<filename.c_str()<<std::endl;
             vtkSmartPointer<vtkPolyDataWriter> fiberwriter = vtkPolyDataWriter::New();
             //       fiberwriter->SetFileTypeToBinary();
             fiberwriter->SetFileName(filename.c_str());
@@ -248,6 +266,7 @@ void writeFiberFile(const std::string & filename, GroupType::Pointer fibergroup)
         // XML
         else if (filename.rfind(".vtp") != std::string::npos)
         {
+        std::cout<<"---Writting VTP output File to "<<filename.c_str()<<std::endl;
             vtkSmartPointer<vtkXMLPolyDataWriter> fiberwriter = vtkXMLPolyDataWriter::New();
             fiberwriter->SetFileName(filename.c_str());
 #if (VTK_MAJOR_VERSION < 6)
