@@ -81,27 +81,6 @@ void FiberFeaturesCreator::Update()
 		this->compute_landmarks_from_vtk_vtp();
 		this->compute_landmarks_average();
 	}
-
-		//this->SetNbLandmarks((int)this->landmarks[0]->GetNumberOfPoints);
-			/* TEST CODE*/
-	 // for(int i=0; i<this->landmarks.size(); i++)
-	 // {
-	 // 	for(int j=0; j<this->nbLandmarks; j++)
-	 // 	{
-	 // 		// puts("JE SAIS PAS 3!");
-	 // 		// vtkPoints * pointetoile = this->landmarks[i];
-	 // 		// std::cout<<"Nb Point: "<<pointetoile->GetNumberOfPoints()<<" ";
-	 // 		// puts("JE SAIS PAS 4!");
-	 // 		// double * pp = GetPoint(pp);
-	 // 		// puts("JE SAIS PAS 5!");
-	 // 		// std::cout<<*pp<<" ";
-	 // 		// std::cout<<pp[0]<<" ";
-
-
-	 // 		std::cout<<this->landmarks[i]->GetPoint(j)[0]<<" "<<this->landmarks[i]->GetPoint(j)[1]<<" "<<this->landmarks[i]->GetPoint(j)[2]<<" ";
-	 // 	}
-	 // 	std::cout<<std::endl<<std::endl<<std::endl;
-	 // }
 	else
 	{
 
@@ -162,7 +141,6 @@ void FiberFeaturesCreator::compute_landmarks_from_model()//std::vector<std::vect
 	//std::vector<std::vector<double*> > landmarks;
 	
 	vtkSmartPointer<vtkDataArray> arclengthArray = this->modelFibers->GetPointData()->GetScalars("SamplingDistance2Origin");
-	vtkSmartPointer<vtkDataArray> fiberindexArray = this->modelFibers->GetPointData()->GetScalars("FiberLocationIndex");
 	int NbPtCurrentFiber;
 	int NbFibers = this->modelFibers->GetNumberOfCells();
 	int k = 0;
@@ -198,14 +176,6 @@ void FiberFeaturesCreator::compute_landmarks_from_model()//std::vector<std::vect
 
 		this->landmarks.push_back(landmarksPtToAdd);
 	}
-
-
-
-	 // std::cout<<"Nb LandMarks = "<<this->landmarks[0].size()<<std::endl;
-	 // std::cout<<"Nb LandMarks = "<<this->landmarks[1].size()<<std::endl;
-	 // std::cout<<"Nb LandMarks = "<<this->landmarks[2].size()<<std::endl;
-	 // std::cout<<"Nb LandMarks = "<<this->landmarks[3].size()<<std::endl;
-
 
 }
 void FiberFeaturesCreator::compute_landmarks_from_vtk_vtp()
@@ -275,15 +245,6 @@ void FiberFeaturesCreator::compute_landmarks_from_fcsv()
 		{
 			this->landmarks.push_back(landmarksPtToAdd);
 		}
-		
-		// for (int u = 0; u < i; ++u)
-		// {
-		// 	for (int v = 0; v < j; ++v)
-		// 	{
-		// 		std::cout<<words[u][v]<<" ";
-		// 	}
-		// 	std::cout<<std::endl;
-		// }
 	}
 	else
 	{
@@ -294,8 +255,11 @@ void FiberFeaturesCreator::compute_landmarks_from_fcsv()
 // Method landmark;
 void FiberFeaturesCreator::compute_landmark_feature()
 {
-	//TEST ON THE METHOD AND IF LANDMARKS NON VOID AND INPUTS TOO
 	int NbFibers=this->inputFibers->GetNumberOfCells();
+	if(NbFibers < 0)
+	{
+		throw itk::ExceptionObject("Empty input fiber");
+	}
 
 	int NbPtOnFiber;
 	std::vector<std::string> landmarkLabel;
@@ -332,7 +296,6 @@ void FiberFeaturesCreator::compute_landmark_feature()
 				p0[0] = pts->GetPoint(j)[0];
 				p0[1] = pts->GetPoint(j)[1];
 				p0[2] = pts->GetPoint(j)[2];
-				//p0 = pts->GetPoint(j);
 				double tuple = sqrt((p0[0]-p1[0])*(p0[0]-p1[0])+(p0[1]-p1[1])*(p0[1]-p1[1])+(p0[2]-p1[2])*(p0[2]-p1[2]));
 				dist2landmark->InsertNextTuple1(tuple);
 			}
@@ -396,7 +359,6 @@ void FiberFeaturesCreator::write_landmarks_file()
 {
 
 	std::string fcsv = "/work/dprince/Projects/DTIFiberTractStatistics/Applications/FiberFeaturesCreator/Outputs/landmarks.fcsv";
-	std::string vtp = "/work/dprince/Projects/DTIFiberTractStatistics/Applications/FiberFeaturesCreator/Outputs/landmarks.vtp";
 	std::ofstream fcsvfile;
 	fcsvfile.open(fcsv.c_str());
 	std::cout<<"---Writting FCSV Landmarks File to "<<fcsv.c_str()<<std::endl;
@@ -409,32 +371,6 @@ void FiberFeaturesCreator::write_landmarks_file()
 		fcsvfile <<",0,0,0,1,1,1,0,F-"<<i+1<<",,\n";
 	}
 	fcsvfile.close();
-
-	// std::cout<<"---Writting VTP Landmarks File to "<<vtp.c_str()<<std::endl;
-	// vtkSmartPointer<vtkPoints> pointsToWrite = vtkSmartPointer<vtkPoints>::New();
-	// vtkSmartPointer<vtkPolyData> polydata = vtkSmartPointer<vtkPolyData>::New();
- //  	vtkSmartPointer<vtkCellArray> vertices = vtkSmartPointer<vtkCellArray>::New();
- //  	polydata->SetPoints(pointsToWrite);
-	// polydata->Allocate();
-	
-	// vtkSmartPointer<vtkIdList> pid = vtkSmartPointer<vtkIdList>::New();
-	// for (int i = 0; i < this->landmarks.size(); ++i)
-	// {
-	// 	for (int j = 0; j < this->nbLandmarks; ++j)
-	// 	{
-	// 		pid->InsertNextId(pointsToWrite->InsertNextPoint(this->landmarks[i]->GetPoint(j)[0],this->landmarks[i]->GetPoint(j)[1],this->landmarks[i]->GetPoint(j)[2]));
-	// 	}
-
-	// 	polydata->InsertNextCell(VTK_POLY_VERTEX, pid);
-	// }
-	
-	// //polydata->SetVerts(vertices);
-	// vtkSmartPointer<vtkXMLPolyDataWriter> writer =  vtkSmartPointer<vtkXMLPolyDataWriter>::New();
-	// //vtkSmartPointer<vtkSimplePointsWriter> writer = vtkSmartPointer<vtkSimplePointsWriter>::New();
-	// writer->SetFileName(vtp.c_str());
-	// writer->SetInputData(polydata);
- //  	writer->Update();
-
 }
 
 

@@ -7,7 +7,7 @@ int main (int argc, char *argv[])
 	PARSE_ARGS;
 
 
-    vtkSmartPointer<FiberFeaturesCreator> test = vtkSmartPointer<FiberFeaturesCreator>::New();
+    vtkSmartPointer<FiberFeaturesCreator> Filter = vtkSmartPointer<FiberFeaturesCreator>::New();
 
 	if(argc < 5)
     {
@@ -47,28 +47,28 @@ int main (int argc, char *argv[])
     }
     if(landmarkOn)
     {
-        test->SetLandmarksOn();
+        Filter->SetLandmarksOn();
         if(landmarkFile.empty() && modelFiber.empty())
         {
             std::cerr << "Specify a Model Fiber File or a FCSV file to compute the landmarks" << std::endl;
             return EXIT_FAILURE;
         }
-        else if(!landmarkFile.empty() && landmarkFile.rfind(".vtk")==std::string::npos && landmarkFile.rfind(".vtp")==std::string::npos)
+        else if(!landmarkFile.empty() && landmarkFile.rfind(".vtk")==std::string::npos && landmarkFile.rfind(".vtp")==std::string::npos && landmarkFile.rfind(".fcsv")==std::string::npos)
         {
-                std::cerr << "Wrong File Format, must be a .fcsv, .vtk or .vtp file" << std::endl;
-                return EXIT_FAILURE;
+            std::cerr << "Wrong File Format, must be a .fcsv, .vtk or .vtp file" << std::endl;
+            return EXIT_FAILURE;
         }
     }
     if(curvatureOn)
-        test->SetCurvatureOn();
+        Filter->SetCurvatureOn();
     if(torsionOn)
-        test->SetTorsionOn();
+        Filter->SetTorsionOn();
 
-    test->SetInput(inputFiber.c_str(),modelFiber.c_str(),landmarkFile.c_str());
-    test->SetNbLandmarks(nbLandmarks);
+    Filter->SetInput(inputFiber.c_str(),modelFiber.c_str(),landmarkFile.c_str());
+    Filter->SetNbLandmarks(nbLandmarks);
 
-	test->Update();
-    writeVTKFile(outputFiber.c_str(),test->GetOutput());
+	Filter->Update();
+    writeVTKFile(outputFiber.c_str(),Filter->GetOutput());
 
 	return EXIT_SUCCESS;
 }
