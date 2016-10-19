@@ -24,17 +24,22 @@ void FiberParametrization::SetNbSamples(int nbSamples)
     }
 }
 FiberParametrization::~FiberParametrization(){}
+GroupType::Pointer FiberParametrization::GetOutput()
+{
+    return this->outputFibers;
+}
 
-GroupType::Pointer FiberParametrization::GetOutput(){
+void FiberParametrization::Update(){
     if(this->outputFibers.IsNotNull()) // CHECK LATER ! ! !
     {
         std::auto_ptr<ChildrenListType> children(this->inputFibers->GetChildren(0));
         typedef ChildrenListType::const_iterator IteratorType;
+        std::cout<<"---Processing Sampling of the fiber "<<std::endl;
         for (IteratorType it = children->begin(); it != children->end(); it++)
         {
             this->sampling_unit(it);
         }
-        return this->outputFibers;
+        std::cout<<"---Sampling finished "<<std::endl;
     }
     else
     {

@@ -13,7 +13,7 @@
             <name>inputFiber</name>
             <label>Path to input fibers</label>
             <channel>input</channel>
-            <longflag>inputfilename</longflag>
+            <longflag>input</longflag>
             <description>Input fibers to be sampled (.vtk or .vtp)</description>
         </geometry>
         <integer>
@@ -29,7 +29,7 @@
             <name>outputFiber</name>
             <label>Output Volume</label>
             <channel>output</channel>
-            <longflag>outputfilename</longflag>
+            <longflag>output</longflag>
             <description>Output fibers to be sampled (.vtk or .vtp)</description>
         </geometry>
     </parameters>

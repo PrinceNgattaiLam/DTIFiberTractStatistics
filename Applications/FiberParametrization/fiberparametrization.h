@@ -1,6 +1,8 @@
 #ifndef FIBERTRACTSAMPLING_H
 #define FIBERTRACTSAMPLING_H
 
+#include <fstream>
+
 //VTK INCLUDES
 #include <vtkPolyDataReader.h>
 #include <vtkCellArray.h>
@@ -34,6 +36,7 @@ public:
 
 
     /** Main Functions */
+    void Update();
     GroupType::Pointer GetOutput(); // Get the output data (data sampled)
     void SetInput(GroupType::Pointer input); // Set the input data (data to sample)
     void SetNbSamples(int nbSamples); // Set the number of samples for our sampling
