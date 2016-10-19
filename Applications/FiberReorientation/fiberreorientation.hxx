@@ -1,28 +1,27 @@
 #include "fiberreorientation.h"
 #include "vtkObjectFactory.h"
-#include <vtkCell.h>
-#include <vtkPoints.h>
 vtkStandardNewMacro(FiberReorientation);
 
 FiberReorientation::FiberReorientation(){
 	this->inputFibers = vtkSmartPointer<vtkPolyData>::New();
+	this->SetHasReversed(false);
 };
 FiberReorientation::~FiberReorientation(){};
 
 
 void FiberReorientation::SetInput(std::string input)
 {
-	this->inputFibers=readVTKFile(input);
+	this->inputFibers = readVTKFile(input);
 }
 
 void FiberReorientation::SetInputData(vtkSmartPointer<vtkPolyData> input)
 {
-	this->inputFibers= input;
+	this->inputFibers = input;
 }
 
 vtkSmartPointer<vtkPolyData> FiberReorientation::GetOutput()
 {
-	std::cout<<"Nb of Cells: "<<this->outputFibers->GetNumberOfCells()<<std::endl;
+	std::cout<<"Nb of Fibers: "<<this->outputFibers->GetNumberOfCells()<<std::endl;
 	std::cout<<"Nb of Points: "<<this->outputFibers->GetNumberOfPoints()<<std::endl;
 	return this->outputFibers;
 }
@@ -41,12 +40,8 @@ void FiberReorientation::Update()
 	vtkPoints* pts = cell->GetPoints();
 	int count_reverse_fiber=0;
 	int NbPts = cell->GetNumberOfPoints();
-	for(int i = 0; i<NbPts; i++)
-	{
-		vtkIdType id = this->outputPts->InsertNextPoint(pts->GetPoint(i)[0],pts->GetPoint(i)[1],pts->GetPoint(i)[2]);
-		ids->InsertNextId(id);
-	}
-	this->outputFibers->InsertNextCell(VTK_POLY_LINE, NbPts, ids->GetPointer(currentId));
+	// this->outputFibers->InsertNextCell(VTK_POLY_LINE, NbPts, ids->GetPointer(currentId));
+
 
 	std::ofstream backlog;
 	backlog.open("backlog.txt");
@@ -59,42 +54,21 @@ void FiberReorientation::Update()
 		vtkCell* cell = this->inputFibers->GetCell(i+1);
 		pts = cell->GetPoints();
 		NbPts = cell->GetNumberOfPoints();
-		//vtkSmartPointer<vtkIdList> ids = vtkSmartPointer<vtkIdList>::New();
-		//if(fabs(weight(i)-weight.mean())> fabs(weight.max_value() - weight.mean()))
 		if(distStart>distEnd)
 		{
+			this->SetHasReversed(true);
 			count_reverse_fiber++;
-			backlog<<"---Reversing "<<i<<"th fiber"<<std::endl;
-			std::cout<<"---Reversing "<<i<<"th fiber"<<std::endl;
-			for(int j=NbPts-1; j>-1; j--)
-			{
-				vtkIdType id = this->outputPts->InsertNextPoint(pts->GetPoint(j)[0],pts->GetPoint(j)[1],pts->GetPoint(j)[2]);
-				ids->InsertNextId(id);
-			}
+			backlog<<"---Reversing Fiber #"<<i<<std::endl;
+			std::cout<<"---Reversing Fiber #"<<i<<std::endl;
+			this->outputFibers->ReverseCell(i+1);
 			currentPt[0] = pts->GetPoint(NbPts-1)[0];
 			currentPt[1] = pts->GetPoint(NbPts-1)[1];
 			currentPt[2] = pts->GetPoint(NbPts-1)[2];
 		}
-		else
-		{	
-			for(int j = 0; j<NbPts; j++)
-			{
-				vtkIdType id = this->outputPts->InsertNextPoint(pts->GetPoint(j)[0],pts->GetPoint(j)[1],pts->GetPoint(j)[2]);
-				ids->InsertNextId(id);
-			}
-			// currentPt[0] = pts->GetPoint(0)[0];
-			// currentPt[1] = pts->GetPoint(0)[1];
-			// currentPt[2] = pts->GetPoint(0)[2];
-		}
-		this->outputFibers->InsertNextCell(VTK_POLY_LINE,NbPts, ids->GetPointer(currentId));
 	}
-
-
-	std::cout<< std::endl;
-	backlog<<"Nb Fibers: "<<count_reverse_fiber<<endl;
+	backlog<<"Nb Fibers reversed: "<<count_reverse_fiber;
+	std::cout<<endl<<"Nb Fibers reversed: "<<count_reverse_fiber<<endl<<endl;
 	backlog<<"Nb Total Fibers: "<<NbFibers<<endl;
-	std::cout<<endl<<"Nb Fibers: "<<count_reverse_fiber;
-	std::cout<<endl<<"Nb Total Fibers: "<<NbFibers<<endl;
 	backlog.close();
 
 	
@@ -156,10 +130,20 @@ void  FiberReorientation::init_endPoints()
 void FiberReorientation::init_output()
 {
 	this->outputFibers = vtkSmartPointer<vtkPolyData>::New();
-	this->outputPts = vtkSmartPointer<vtkPoints>::New();
-	this->outputPts->SetNumberOfPoints(0);
-	this->outputFibers->SetPoints(this->outputPts);
-	this->outputFibers->Allocate();
+	//this->outputPts = vtkSmartPointer<vtkPoints>::New();
+	//this->outputPts->SetNumberOfPoints(0);
+	//this->outputFibers->SetPoints(this->outputPts);
+	this->outputFibers= this->inputFibers;
+}
+
+void FiberReorientation::SetHasReversed(bool state)
+{
+	this->hasReversed = state;
+}
+
+bool FiberReorientation::GetHasReversed()
+{
+	return this->hasReversed;
 }
 
 	
