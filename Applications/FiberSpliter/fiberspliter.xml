@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<executable>
+    <category>Sampling</category>
+    <title>Fiber Reorientation</title>
+    <description>Reorientate fiber of a bunch of fibers in the same sense</description>
+    <version>1.0</version>
+    <contributor>Ngattai Lam Prince, Juan Carlos Prieto, Martin Styner</contributor>
+   <acknowledgements>
+    This work is part of the project for the University Of North Carolina, Neuro Image Research and Analysis Laboratories.
+  </acknowledgements>
+    <parameters>
+        <geometry>
+            <name>inputFiber</name>
+            <label>Input Fibers</label>
+            <channel>input</channel>
+            <longflag>input</longflag>
+            <description>Input fibers to be reoriented (.vtk or .vtp)</description>
+        </geometry>
+        <file>
+            <name>outputFiber</name>
+            <label>Output Directory</label>
+            <channel>output</channel>
+            <longflag>output</longflag>
+            <description>Output fibers directory</description>
+        </file>
+    </parameters>
+</executable>
