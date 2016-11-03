@@ -133,7 +133,6 @@ vtkSmartPointer<vtkPolyData> FiberFeaturesCreator::GetOutput()
 	return this->outputFibers;
 }
 
-
 void FiberFeaturesCreator::compute_landmarks_from_model()//std::vector<std::vector<vtkPoints*> > compute_landmarks()
 {
 	//TEST SUR INPUTSFIBERS ETC...
@@ -303,7 +302,6 @@ void FiberFeaturesCreator::compute_landmark_feature()
 		}
 		this->outputFibers->GetPointData()->SetActiveScalars(landmarkLabel[k].c_str());
 		this->outputFibers->GetPointData()->SetScalars(dist2landmark);
-
 	}
 	
 }
