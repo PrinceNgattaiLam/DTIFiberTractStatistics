@@ -45,6 +45,7 @@ void FiberReorientation::Update()
 
 	std::ofstream backlog;
 	backlog.open("backlog.txt");
+	std::cout<<"---Processing Fibers"<<std::endl;
 	double currentPt[3] = {this->startPoints->GetPoint(0)[0],this->startPoints->GetPoint(0)[1],this->startPoints->GetPoint(0)[2]};
 	for(int i = 0; i < NbFibers-1; i++)
 	{
@@ -59,7 +60,7 @@ void FiberReorientation::Update()
 			this->SetHasReversed(true);
 			count_reverse_fiber++;
 			backlog<<"---Reversing Fiber #"<<i<<std::endl;
-			std::cout<<"---Reversing Fiber #"<<i<<std::endl;
+			// std::cout<<"---Reversing Fiber #"<<i<<std::endl;
 			this->outputFibers->ReverseCell(i+1);
 			currentPt[0] = pts->GetPoint(NbPts-1)[0];
 			currentPt[1] = pts->GetPoint(NbPts-1)[1];
@@ -67,6 +68,7 @@ void FiberReorientation::Update()
 		}
 	}
 	backlog<<"Nb Fibers reversed: "<<count_reverse_fiber;
+	std::cout<<"---Fibers Processed"<<std::endl;
 	std::cout<<endl<<"Nb Fibers reversed: "<<count_reverse_fiber<<endl<<endl;
 	backlog<<"Nb Total Fibers: "<<NbFibers<<endl;
 	backlog.close();
