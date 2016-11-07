@@ -64,7 +64,7 @@ int main (int argc, char *argv[])
     if(torsionOn)
         Filter->SetTorsionOn();
 
-    Filter->SetInput(inputFiber.c_str(),modelFiber.c_str(),landmarkFile.c_str());
+    Filter->SetInput(inputFiber.c_str(),modelFiber.c_str(),landmarkFile.c_str(), outputFiber.c_str());
     Filter->SetNbLandmarks(nbLandmarks);
 
 	Filter->Update();

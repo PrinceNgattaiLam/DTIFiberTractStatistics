@@ -9,6 +9,14 @@
 
 #define NB_LINES_MAX 500 // We cannot choose more than 500 fcsv points
 #define NB_WORDS_MAX 100 // We cannot have more than 15 words per line
+// #define BLUE "\033[0;34m"
+// #define RED "\033[0;31m"
+// #define GREEN_BOLD "\033[0;32m"
+// #define YELLOW "\033[0;33m"
+// #define NC "\033[0m"
+
+
+
 
 
 vtkStandardNewMacro(FiberFeaturesCreator);
@@ -29,16 +37,17 @@ FiberFeaturesCreator::FiberFeaturesCreator(){
 
 FiberFeaturesCreator::~FiberFeaturesCreator(){}
 
-void FiberFeaturesCreator::SetInput(std::string input, std::string model, std::string landmarkfile)
+void FiberFeaturesCreator::SetInput(std::string input, std::string model, std::string landmarkfile, std::string output)
 {
 	this->inputFibers = readVTKFile(input);
 
-	if(!model.empty())
+	if (!model.empty())
 	{
 		this->modelFibers = readVTKFile(model);
+		this->landmarksFilename = output.substr(0,output.rfind("."))+"_landmarks.fcsv";
 	}
 	
-	if(landmarkfile.empty())
+	else if (landmarkfile.empty())
 	{
 		this->fcsvPointsOn = false;
 		this->vtPointsOn = false;
@@ -69,23 +78,21 @@ void FiberFeaturesCreator::Update()
 	this->init_output();
 	if(fcsvPointsOn)
 	{
-		std::cout<<std::endl<<std::endl;
-		puts("---FCSV File found, Computing landmarks from the FCSV File");
+		std::cout<<std::endl<<GREEN_BOLD<<"---FCSV File found, Computing landmarks from the FCSV File"<<NC<<std::endl;
 		this->compute_landmarks_from_fcsv();
 		this->compute_landmarks_average();
 	}
 	else if(vtPointsOn)
 	{
-		std::cout<<std::endl<<std::endl;
-		puts("---VTK File found, Computing landmarks from the VTK File");
+		std::cout<<std::endl<<GREEN_BOLD<<"---VTK File found, Computing landmarks from the VTK File"<<NC<<std::endl;
+		puts("\033[0;32m---VTK File found, Computing landmarks from the VTK File\033[0m");
 		this->compute_landmarks_from_vtk_vtp();
 		this->compute_landmarks_average();
 	}
 	else
 	{
 
-		std::cout<<std::endl<<std::endl;
-		puts("---No VTK or FCSV File for the landmarks, Computing landmarks from the model");
+		std::cout<<std::endl<<GREEN_BOLD<<"---No VTK or FCSV File for the landmarks, Computing landmarks from the model"<<NC<<std::endl;
 		this->compute_landmarks_from_model();
 		this->compute_landmarks_average();
 	}
@@ -95,23 +102,17 @@ void FiberFeaturesCreator::Update()
 		std::cout<<std::endl;
 		puts("Computing Distance To Landmarks Features of the Fibers");
 		puts("******************************************************");
-		puts("Start");
 		if(!fcsvPointsOn && !vtPointsOn)
 			this->write_landmarks_file();
 		this->compute_landmark_feature();
-		puts("Finished");
-		std::cout<<std::endl;
 
 	}
 	if(this->torsionsOn)
 	{
-		std::cout<<std::endl<<std::endl;
+		std::cout<<std::endl;
 		puts("Computing Torsions Features of the Fibers");
 		puts("*****************************************");
-		puts("Start");
 		this->compute_torsions_feature();
-		puts("Finished");
-		std::cout<<std::endl;
 
 	}
 	if(this->curvaturesOn)
@@ -119,10 +120,7 @@ void FiberFeaturesCreator::Update()
 		std::cout<<std::endl;
 		puts("Computing Curvatures Features of the Fibers");
 		puts("*****************************************");
-		puts("Start");
 		this->compute_curvatures_feature();
-		puts("Finished");
-		std::cout<<std::endl;
 
 	}
 
@@ -138,19 +136,24 @@ void FiberFeaturesCreator::compute_landmarks_from_model()//std::vector<std::vect
 	//TEST SUR INPUTSFIBERS ETC...
 	std::vector<vtkFloatArray*> arclengthMatrix;
 	//std::vector<std::vector<double*> > landmarks;
-	
+
 	vtkSmartPointer<vtkDataArray> arclengthArray = this->modelFibers->GetPointData()->GetScalars("SamplingDistance2Origin");
 	int NbPtCurrentFiber;
 	int NbFibers = this->modelFibers->GetNumberOfCells();
 	int k = 0;
-
 	for(int i=0; i<NbFibers; i++)
 	{
 		vtkFloatArray* arclengthArrayCurrent = vtkFloatArray::New();
 		NbPtCurrentFiber = this->modelFibers->GetCell(i)->GetPoints()->GetNumberOfPoints();
 		for(int j=0; j<NbPtCurrentFiber; j++)
 		{
+			if(!arclengthArray) 
+			{
+				throw itk::ExceptionObject("Error during the extraction of the scalars 'SamplingDistance2Origin' in the model. Please check that the model has the model fiber is valid (Must have 'SamplingDistance2Origin' as a scalar parameter)");
+			}
+
 			arclengthArrayCurrent->InsertNextTuple1(arclengthArray->GetTuple1(k));
+			arclengthArray->GetTuple1(k);
 			k++;
 		}
 		arclengthMatrix.push_back(arclengthArrayCurrent);
@@ -158,6 +161,7 @@ void FiberFeaturesCreator::compute_landmarks_from_model()//std::vector<std::vect
 	for(int i=0; i<NbFibers; i++)
 	{
 		std::vector<int> landmarksIndexArray = find_landmarks_index(arclengthMatrix[i]->GetNumberOfTuples() , this->nbLandmarks);
+		//std::cout<<"Size = "<<landmarksIndexArray.size()<<"   ";
 		vtkSmartPointer<vtkPoints> landmarksPtToAdd = vtkSmartPointer<vtkPoints>::New();
 		//landmarksPtToAdd->SetNumberOfPoints(this->nbLandmarks);
 		vtkPoints* pts = this->modelFibers->GetCell(i)->GetPoints();
@@ -317,11 +321,17 @@ void FiberFeaturesCreator::compute_landmarks_average()
 			avg_x += this->landmarks[j]->GetPoint(i)[0];
 			avg_y += this->landmarks[j]->GetPoint(i)[1];
 			avg_z += this->landmarks[j]->GetPoint(i)[2];
+			// if(i==4) 
+			// {
+			// 	std::cout<<"avgZ ="<<this->landmarks[1]->GetPoint(i)[2]<<"   ";
+			// }
 		}
 		avg_x /= this->landmarks.size();
 		avg_y /= this->landmarks.size();
 		avg_z /= this->landmarks.size();
+
 		this->avgLandmarks->InsertNextPoint(avg_x,avg_y,avg_z);
+		avg_x=0; avg_y=0; avg_z=0;
 	}
 }
 
@@ -356,10 +366,10 @@ void FiberFeaturesCreator::SetTorsionOn()
 void FiberFeaturesCreator::write_landmarks_file()
 {
 
-	std::string fcsv = "/work/dprince/Projects/DTIFiberTractStatistics/Applications/FiberFeaturesCreator/Outputs/landmarks.fcsv";
+	std::string fcsv = this->landmarksFilename;
 	std::ofstream fcsvfile;
 	fcsvfile.open(fcsv.c_str());
-	std::cout<<"---Writting FCSV Landmarks File to "<<fcsv.c_str()<<std::endl;
+	std::cout<<BLUE_BOLD<<"---Writting FCSV Landmarks File to "<<CYAN_BOLD<<fcsv.c_str()<<NC<<std::endl;
 	fcsvfile << "# Markups fiducial file version = 4.5\n";
 	fcsvfile << "# CoordinateSystem = 0\n";
 	fcsvfile << "# columns = id,x,y,z,ow,ox,oy,oz,vis,sel,lock,label,desc,associatedNodeID\n";
@@ -379,7 +389,7 @@ std::vector<int> find_landmarks_index(int nbSamples , int nbLandmarks)
 
 	for(int k=0; k < nbLandmarks; k++)
 	{
-		index.push_back(k*(nbSamples/(nbLandmarks-1)));
+		index.push_back(k*((nbSamples-1)/(nbLandmarks-1)));
 	}
 	return index;
 }

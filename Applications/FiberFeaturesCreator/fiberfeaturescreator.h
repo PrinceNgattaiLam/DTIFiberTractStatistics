@@ -35,7 +35,7 @@ public:
      * @param model         - location of the model fiber file (optionnal - depends on the method)
      * @param landmarksFile - location of the file containing landmarks (optionnal - depends on the method)
      */
-    void SetInput(std::string input, std::string model, std::string landmarksFile);
+    void SetInput(std::string input, std::string model, std::string landmarksFile, std::string output);
 
     /**
      * Set Number of Landmarks to compute
