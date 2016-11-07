@@ -9,7 +9,7 @@
 #include <vtkPolyDataAlgorithm.h>
 #include <iostream>
 #include <fstream>
-#include "fiberfileIO.hxx"
+#include "../FiberFeaturesCreator/fiberfileIO.hxx"
 
 /**
  * Filter that takes a fiber as input and reorientate it in order to have all the fibers in the same
