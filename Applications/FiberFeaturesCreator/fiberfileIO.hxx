@@ -5,7 +5,7 @@ vtkSmartPointer<vtkPolyData> readVTKFile (std::string filename)
 {           // VTK
 	if (filename.rfind(".vtk") != std::string::npos)
 	{
-        std::cout<<"---Reading VTK input file at "<<filename.c_str()<<std::endl;
+        std::cout<<std::endl<<BLUE_BOLD<<"---Reading VTK input file at "<<CYAN_BOLD<<filename.c_str()<<NC<<std::endl;
         vtkSmartPointer<vtkPolyDataReader> fiberReader = vtkPolyDataReader::New();
         fiberReader->SetFileName(filename.c_str());
         if(fiberReader->OpenVTKFile())
@@ -22,7 +22,7 @@ vtkSmartPointer<vtkPolyData> readVTKFile (std::string filename)
 	        // XML
     else if (filename.rfind(".vtp") != std::string::npos)
     {
-        std::cout<<"---Reading VTP input file at "<<filename.c_str()<<std::endl;
+        std::cout<<std::endl<<BLUE_BOLD<<"---Reading VTP input file at "<<CYAN_BOLD<<filename.c_str()<<std::endl;
         vtkSmartPointer<vtkXMLPolyDataReader> fiberReader = vtkXMLPolyDataReader::New();
         fiberReader->SetFileName(filename.c_str());
         if(fiberReader->CanReadFile(filename.c_str()))
@@ -46,7 +46,7 @@ void writeVTKFile (std::string filename, vtkSmartPointer<vtkPolyData> output)
 {	
 	if (filename.rfind(".vtk") != std::string::npos)
 	{
-        std::cout<<"---Writting VTK output File to "<<filename.c_str()<<std::endl;
+        std::cout<<std::endl<<BLUE_BOLD<<"---Writting VTK output File to "<<CYAN_BOLD<<filename.c_str()<<NC<<std::endl;
         vtkSmartPointer<vtkPolyDataWriter> fiberWriter = vtkPolyDataWriter::New();
         fiberWriter->SetFileName(filename.c_str());
 
@@ -60,7 +60,7 @@ void writeVTKFile (std::string filename, vtkSmartPointer<vtkPolyData> output)
 	        // XML
     else if (filename.rfind(".vtp") != std::string::npos)
     {
-        std::cout<<"---Writting VTP output File to "<<filename.c_str()<<std::endl;
+        std::cout<<BLUE_BOLD<<"---Writting VTP output File to "<<CYAN_BOLD<<filename.c_str()<<NC<<std::endl;
     	vtkSmartPointer<vtkXMLPolyDataWriter> fiberWriter = vtkXMLPolyDataWriter::New();
     	fiberWriter->SetFileName(filename.c_str());
 		#if (VTK_MAJOR_VERSION < 6)
