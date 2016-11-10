@@ -22,12 +22,12 @@ void TransformPointsFilter::SetInputFilename(std::string input)
 		this->inputfilename = input;
 		if(input.rfind(".fcsv")!=std::string::npos)
 		{	
-			std::cout<<"---FCSV File, Extraction of points from the file"<<std::endl;
+			std::cout<<BLUE_BOLD<<"---FCSV File, Extraction of points from the file "<<CYAN_BOLD<<input<<NC<<std::endl;
 			this->read_fcsv_points();
 		}
 		else if(input.rfind(".vtk")!=std::string::npos || input.rfind(".vtp")!=std::string::npos)
 		{
-			std::cout<<"---VTK File, Extraction of points from the file"<<std::endl;
+			std::cout<<"---VTK File, Extraction of points from the file "<<input<<std::endl;
 			this->read_vtk_points();
 		}
 		else
@@ -72,11 +72,12 @@ void TransformPointsFilter::SetTransform(std::string t_filename)
 			this->M(i,j) = Parameter.GetElement(i*nbCol + j);
 		}
 	}
+
 	for(unsigned int i = 0; i < nbRow; ++i) 
 	{
 		for(unsigned int j = 0; j < nbCol; ++j) 
 		{
-			this->t(i,j) = Parameter.GetElement(10+i);
+			this->t(i,j) = Parameter.GetElement(9+j);
 		}
 	}
 }
@@ -85,6 +86,10 @@ void TransformPointsFilter::Update()
 {
 	this->m_Y.set_size(this->m_X.rows(),this->m_X.columns());
 	this->m_Y = this->m_X*this->M + this->t;
+	std::cout<<std::endl<<"Y:"<<this->m_Y<<std::endl;
+	std::cout<<"X:"<<this->m_X<<std::endl;
+	std::cout<<"M:"<<this->M<<std::endl;
+	std::cout<<"t:"<<this->t<<std::endl;
 	if(this->outputfilename.rfind(".fcsv")!=std::string::npos)
 		this->write_fcsv_points();
 	else if(this->outputfilename.rfind(".vtk")!=std::string::npos || this->outputfilename.rfind(".vtp")!=std::string::npos)
@@ -185,7 +190,7 @@ void TransformPointsFilter::write_fcsv_points()
 	std::ofstream fcsvfile;
 
 	fcsvfile.open(fcsv.c_str());
-	std::cout<<"---Writting FCSV Landmarks File to "<<fcsv.c_str()<<std::endl;
+	std::cout<<BLUE_BOLD<<"---Writting FCSV Landmarks File to "<<CYAN_BOLD<<fcsv.c_str()<<NC<<std::endl;
 	fcsvfile << "# Markups fiducial file version = 4.5\n";
 	fcsvfile << "# CoordinateSystem = 0\n";
 	fcsvfile << "# columns = id,x,y,z,ow,ox,oy,oz,vis,sel,lock,label,desc,associatedNodeID\n";
