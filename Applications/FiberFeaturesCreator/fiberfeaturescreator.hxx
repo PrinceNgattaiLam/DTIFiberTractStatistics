@@ -7,8 +7,9 @@
 #include <string> 
 #include <fstream>
 
-#define NB_LINES_MAX 500 // We cannot choose more than 500 fcsv points
-#define NB_WORDS_MAX 100 // We cannot have more than 15 words per line
+#define NB_LINES 250
+#define NB_WORDS 250
+
 // #define BLUE "\033[0;34m"
 // #define RED "\033[0;31m"
 // #define GREEN_BOLD "\033[0;32m"
@@ -44,7 +45,7 @@ void FiberFeaturesCreator::SetInput(std::string input, std::string model, std::s
 	if (!model.empty())
 	{
 		this->modelFibers = readVTKFile(model);
-		this->landmarksFilename = output.substr(0,output.rfind("."))+"_landmarks.fcsv";
+		this->landmarksFilename = output.substr(0,output.rfind("."))+"_landmarks";
 	}
 	
 	else if (landmarkfile.empty())
@@ -85,7 +86,6 @@ void FiberFeaturesCreator::Update()
 	else if(vtPointsOn)
 	{
 		std::cout<<std::endl<<GREEN_BOLD<<"---VTK File found, Computing landmarks from the VTK File"<<NC<<std::endl;
-		puts("\033[0;32m---VTK File found, Computing landmarks from the VTK File\033[0m");
 		this->compute_landmarks_from_vtk_vtp();
 		this->compute_landmarks_average();
 	}
@@ -102,9 +102,10 @@ void FiberFeaturesCreator::Update()
 		std::cout<<std::endl;
 		puts("Computing Distance To Landmarks Features of the Fibers");
 		puts("******************************************************");
+		this->compute_landmark_feature();
 		if(!fcsvPointsOn && !vtPointsOn)
 			this->write_landmarks_file();
-		this->compute_landmark_feature();
+	
 
 	}
 	if(this->torsionsOn)
@@ -184,13 +185,13 @@ void FiberFeaturesCreator::compute_landmarks_from_model()//std::vector<std::vect
 void FiberFeaturesCreator::compute_landmarks_from_vtk_vtp()
 {
 	vtkSmartPointer<vtkPolyData> vtkLandmarks = readVTKFile(this->landmarksFilename);
-	int NbCells = vtkLandmarks->GetNumberOfCells();
-	for(int i=0; i<NbCells; ++i)
+	int NbPoints = vtkLandmarks->GetNumberOfPoints();
+	vtkSmartPointer<vtkPoints> point = vtkSmartPointer<vtkPoints>::New();
+	for(int i=0; i<NbPoints; ++i)
 	{
-		vtkSmartPointer<vtkPoints> PtToAdd = vtkSmartPointer<vtkPoints>::New();
-		vtkSmartPointer<vtkPoints> points = vtkLandmarks->GetCell(i)->GetPoints();
-		this->landmarks.push_back(points);
+		point->InsertNextPoint(vtkLandmarks->GetPoint(i)[0],vtkLandmarks->GetPoint(i)[1],vtkLandmarks->GetPoint(i)[2]);
 	}
+	this->landmarks.push_back(point);
 
 }
 void FiberFeaturesCreator::compute_landmarks_from_fcsv()
@@ -198,7 +199,7 @@ void FiberFeaturesCreator::compute_landmarks_from_fcsv()
 	std::fstream fcsvfile(this->landmarksFilename.c_str());
 	std::string line;
 	std::string mot;
-	std::string words[NB_LINES_MAX][NB_WORDS_MAX]; // !!!! WARNING DEFINE AND TO PROTECT IF SUPERIOR TO 20
+	std::string words[NB_LINES][NB_WORDS]; // !!!! WARNING DEFINE AND TO PROTECT IF SUPERIOR TO 20
 	int i,j;
 	vtkSmartPointer<vtkPoints> landmarksPtToAdd = vtkSmartPointer<vtkPoints>::New();
 	
@@ -270,7 +271,7 @@ void FiberFeaturesCreator::compute_landmark_feature()
 	{
 
 		std::string k_char = static_cast<std::ostringstream*>( &( std::ostringstream() << k) )->str();
-		landmarkLabel.push_back("Distance2Landmark"+k_char);	
+		landmarkLabel.push_back("Distance2Landmark"+k_char);
 		
 	}
 
@@ -365,8 +366,7 @@ void FiberFeaturesCreator::SetTorsionOn()
 
 void FiberFeaturesCreator::write_landmarks_file()
 {
-
-	std::string fcsv = this->landmarksFilename;
+	std::string fcsv = this->landmarksFilename + ".fcsv";
 	std::ofstream fcsvfile;
 	fcsvfile.open(fcsv.c_str());
 	std::cout<<BLUE_BOLD<<"---Writting FCSV Landmarks File to "<<CYAN_BOLD<<fcsv.c_str()<<NC<<std::endl;
@@ -379,6 +379,16 @@ void FiberFeaturesCreator::write_landmarks_file()
 		fcsvfile <<",0,0,0,1,1,1,0,F-"<<i+1<<",,\n";
 	}
 	fcsvfile.close();
+
+	std::string vtkfile = this->landmarksFilename + ".vtk";
+	vtkSmartPointer<vtkPolyData> landmarksPolydata = vtkSmartPointer<vtkPolyData>::New();
+	vtkPoints* points = vtkPoints::New();
+	for(int i=0; i<this->nbLandmarks; i++)
+	{
+		points->InsertPoint(i,this->avgLandmarks->GetPoint(i)[0],this->avgLandmarks->GetPoint(i)[1],this->avgLandmarks->GetPoint(i)[2]);
+	}
+	landmarksPolydata->SetPoints(points);
+	writeVTKFile(vtkfile.c_str(), landmarksPolydata);
 }
 
 
