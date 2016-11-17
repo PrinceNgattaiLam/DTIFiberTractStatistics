@@ -1,3 +1,6 @@
+#ifndef FIBERFILEIO_H
+#define FIBERFILEIO_H
+
 #include <vtkPolyDataReader.h>
 #include <vtkPolyDataWriter.h>
 #include <vtkXMLPolyDataWriter.h>
@@ -27,3 +30,5 @@ vtkSmartPointer<vtkPolyData> readVTKFile (std::string filename);
  * @param output   - Data of the file to write
  */
 void writeVTKFile (std::string filename, vtkSmartPointer<vtkPolyData> output);
+
+#endif // FIBERFILEIO_H

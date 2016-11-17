@@ -46,7 +46,7 @@ void writeVTKFile (std::string filename, vtkSmartPointer<vtkPolyData> output)
 {	
 	if (filename.rfind(".vtk") != std::string::npos)
 	{
-        std::cout<<std::endl<<BLUE_BOLD<<"---Writting VTK file "<<CYAN_BOLD<<filename.c_str()<<NC<<std::endl;
+        std::cout<<std::endl<<BLUE_BOLD<<"---Writing VTK file "<<CYAN_BOLD<<filename.c_str()<<NC<<std::endl;
         vtkSmartPointer<vtkPolyDataWriter> fiberWriter = vtkPolyDataWriter::New();
         fiberWriter->SetFileName(filename.c_str());
 
@@ -60,7 +60,7 @@ void writeVTKFile (std::string filename, vtkSmartPointer<vtkPolyData> output)
 	        // XML
     else if (filename.rfind(".vtp") != std::string::npos)
     {
-        std::cout<<BLUE_BOLD<<"---Writting VTP file "<<CYAN_BOLD<<filename.c_str()<<NC<<std::endl;
+        std::cout<<BLUE_BOLD<<"---Writing VTP file "<<CYAN_BOLD<<filename.c_str()<<NC<<std::endl;
     	vtkSmartPointer<vtkXMLPolyDataWriter> fiberWriter = vtkXMLPolyDataWriter::New();
     	fiberWriter->SetFileName(filename.c_str());
 		#if (VTK_MAJOR_VERSION < 6)
