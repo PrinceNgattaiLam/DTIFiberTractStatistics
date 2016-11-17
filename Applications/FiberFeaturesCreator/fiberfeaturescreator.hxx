@@ -369,7 +369,7 @@ void FiberFeaturesCreator::write_landmarks_file()
 	std::string fcsv = this->landmarksFilename + ".fcsv";
 	std::ofstream fcsvfile;
 	fcsvfile.open(fcsv.c_str());
-	std::cout<<BLUE_BOLD<<"---Writting FCSV Landmarks File to "<<CYAN_BOLD<<fcsv.c_str()<<NC<<std::endl;
+	std::cout<<BLUE_BOLD<<"---Writing FCSV Landmarks File to "<<CYAN_BOLD<<fcsv.c_str()<<NC<<std::endl;
 	fcsvfile << "# Markups fiducial file version = 4.5\n";
 	fcsvfile << "# CoordinateSystem = 0\n";
 	fcsvfile << "# columns = id,x,y,z,ow,ox,oy,oz,vis,sel,lock,label,desc,associatedNodeID\n";
