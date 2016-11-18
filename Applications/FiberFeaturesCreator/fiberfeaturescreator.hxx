@@ -47,7 +47,6 @@ void FiberFeaturesCreator::SetInput(std::string input, std::string model, std::s
 		this->modelFibers = readVTKFile(model);
 		this->landmarksFilename = output.substr(0,output.rfind("."))+"_landmarks";
 	}
-	
 	else if (landmarkfile.empty())
 	{
 		this->fcsvPointsOn = false;
