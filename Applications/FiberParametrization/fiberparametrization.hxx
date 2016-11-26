@@ -73,8 +73,8 @@ void FiberParametrization::sampling_unit(ChildrenListType::const_iterator it){
     itk::Point<double,3> p0, p1; // We create two points which will contain the coordinates of two consecutives points
     float fa0, fa1, md0, md1, l10, l11, l20, l21, l30, l31, rd0, rd1; // We create variables to store each diffusivity values for these two points
     std::vector<DTIPointType> pts = tube->GetPoints();
-    itk::Vector<double, 3> spacing(tube->GetSpacing());
-    itk::Vector<double, 3> origin(tube->GetObjectToWorldTransform()->GetOffset());
+    // itk::Vector<double, 3> spacing(tube->GetSpacing());
+    // itk::Vector<double, 3> origin(tube->GetObjectToWorldTransform()->GetOffset());
     itk::DTITubeSpatialObject<3>::Pointer dtiTube = itk::DTITubeSpatialObject<3>::New();
     std::vector<DTIPointType> pointsToAdd;
 
@@ -104,32 +104,32 @@ void FiberParametrization::sampling_unit(ChildrenListType::const_iterator it){
 
             // We store the values for each variables created previously
             p0   =   dtiPt0.GetPosition();                   p1  =   dtiPt1.GetPosition();
-            fa0  =   dtiPt0.GetField("FA");                  fa1 =   dtiPt1.GetField("FA");
-            md0  =   dtiPt0.GetField("MD");                  md1 =   dtiPt1.GetField("MD");
-            l10  =   dtiPt0.GetField("l1");                  l11 =   dtiPt1.GetField("l1");
-            l20  =   dtiPt0.GetField("l2");                  l21 =   dtiPt1.GetField("l2");
-            l30  =   dtiPt0.GetField("l3");                  l31 =   dtiPt1.GetField("l3");
-            rd0  =   dtiPt0.GetField("RD");                  rd1 =   dtiPt1.GetField("RD");
+            // fa0  =   dtiPt0.GetField("FA");                  fa1 =   dtiPt1.GetField("FA");
+            // md0  =   dtiPt0.GetField("MD");                  md1 =   dtiPt1.GetField("MD");
+            // l10  =   dtiPt0.GetField("l1");                  l11 =   dtiPt1.GetField("l1");
+            // l20  =   dtiPt0.GetField("l2");                  l21 =   dtiPt1.GetField("l2");
+            // l30  =   dtiPt0.GetField("l3");                  l31 =   dtiPt1.GetField("l3");
+            // rd0  =   dtiPt0.GetField("RD");                  rd1 =   dtiPt1.GetField("RD");
 
             // We do a linear interpolation between the two consecutives points that arround our new point
             new_p[0]    =   (1-t)*p0[0]  + t*p1[0];
             new_p[1]    =   (1-t)*p0[1]  + t*p1[1];
             new_p[2]    =   (1-t)*p0[2]  + t*p1[2];
-            new_fa      =   (1-t)*fa0 + t*fa1;
-            new_md      =   (1-t)*md0 + t*md1;
-            new_l1      =   (1-t)*l10 + t*l11;
-            new_l2      =   (1-t)*l20 + t*l21;
-            new_l3      =   (1-t)*l30 + t*l31;
-            new_rd      =   (1-t)*rd0 + t*rd1;
+            // new_fa      =   (1-t)*fa0 + t*fa1;
+            // new_md      =   (1-t)*md0 + t*md1;
+            // new_l1      =   (1-t)*l10 + t*l11;
+            // new_l2      =   (1-t)*l20 + t*l21;
+            // new_l3      =   (1-t)*l30 + t*l31;
+            // new_rd      =   (1-t)*rd0 + t*rd1;
 
             // We add the new computed values
             newDtiPt.SetPosition(new_p);
-            newDtiPt.AddField("FA",new_fa);
-            newDtiPt.AddField("MD",new_md);
-            newDtiPt.AddField("l1",new_l1);
-            newDtiPt.AddField("l2",new_l2);
-            newDtiPt.AddField("l3",new_l3);
-            newDtiPt.AddField("RD",new_rd);
+            // newDtiPt.AddField("FA",new_fa);
+            // newDtiPt.AddField("MD",new_md);
+            // newDtiPt.AddField("l1",new_l1);
+            // newDtiPt.AddField("l2",new_l2);
+            // newDtiPt.AddField("l3",new_l3);
+            // newDtiPt.AddField("RD",new_rd);
         }
         else
         {
