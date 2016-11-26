@@ -78,52 +78,52 @@ GroupType::Pointer readFiberFile(std::string filename)
                 pt.SetRadius(0.5); // We set a radius of 0.5 by default
                 pt.SetColor(0.0, 0.0, 1.0); // We set blue color by default
 
-                if (fibtensordata != NULL)
-                {
-                    double * vtktensor = fibtensordata->GetTuple9(pindex);
-                    float floattensor[6];
-                    ITKTensorType itktensor;
+                // if (fibtensordata != NULL)
+                // {
+                //     double * vtktensor = fibtensordata->GetTuple9(pindex);
+                //     float floattensor[6];
+                //     ITKTensorType itktensor;
 
-                    floattensor[0] = itktensor[0] = vtktensor[0];
-                    floattensor[1] = itktensor[1] = vtktensor[1];
-                    floattensor[2] = itktensor[2] = vtktensor[2];
-                    floattensor[3] = itktensor[3] = vtktensor[4];
-                    floattensor[4] = itktensor[4] = vtktensor[5];
-                    floattensor[5] = itktensor[5] = vtktensor[8];
+                //     floattensor[0] = itktensor[0] = vtktensor[0];
+                //     floattensor[1] = itktensor[1] = vtktensor[1];
+                //     floattensor[2] = itktensor[2] = vtktensor[2];
+                //     floattensor[3] = itktensor[3] = vtktensor[4];
+                //     floattensor[4] = itktensor[4] = vtktensor[5];
+                //     floattensor[5] = itktensor[5] = vtktensor[8];
 
-                    pt.SetTensorMatrix(floattensor); // We conpute the Tensor Matrix for each point
+                //     pt.SetTensorMatrix(floattensor); // We conpute the Tensor Matrix for each point
 
-                    LambdaArrayType lambdas;
+                //     LambdaArrayType lambdas;
 
 
-                    itktensor.ComputeEigenValues(lambdas); // Need to do eigenanalysis of the tensor
+                //     itktensor.ComputeEigenValues(lambdas); // Need to do eigenanalysis of the tensor
 
-                    // We compute the differents diffusivity values according to their mathematics expressions
-                    float md = (lambdas[0] + lambdas[1] + lambdas[2])/3;
-                    float fa = sqrt(1.5) * sqrt((lambdas[0] - md)*(lambdas[0] - md) +
-                            (lambdas[1] - md)*(lambdas[1] - md) +
-                            (lambdas[2] - md)*(lambdas[2] - md))
-                            / sqrt(lambdas[0]*lambdas[0] + lambdas[1]*lambdas[1] + lambdas[2]*lambdas[2]);
+                //     // We compute the differents diffusivity values according to their mathematics expressions
+                //     float md = (lambdas[0] + lambdas[1] + lambdas[2])/3;
+                //     float fa = sqrt(1.5) * sqrt((lambdas[0] - md)*(lambdas[0] - md) +
+                //             (lambdas[1] - md)*(lambdas[1] - md) +
+                //             (lambdas[2] - md)*(lambdas[2] - md))
+                //             / sqrt(lambdas[0]*lambdas[0] + lambdas[1]*lambdas[1] + lambdas[2]*lambdas[2]);
 
-                    float logavg = (log(lambdas[0])+log(lambdas[1])+log(lambdas[2]))/3;
+                //     float logavg = (log(lambdas[0])+log(lambdas[1])+log(lambdas[2]))/3;
 
-                    //                    float ga =  sqrt( SQ2(log(lambdas[0])-logavg)
-                    //                            + SQ2(log(lambdas[1])-logavg)
-                    //                            + SQ2(log(lambdas[2])-logavg) );
-                    //                  float fro = sqrt(lambdas[0]*lambdas[0] + lambdas[1]*lambdas[1] + lambdas[2]*lambdas[2]);
-                    float ad = lambdas[2];
-                    float rd = (lambdas[0] + lambdas[1])/2;
+                //     //                    float ga =  sqrt( SQ2(log(lambdas[0])-logavg)
+                //     //                            + SQ2(log(lambdas[1])-logavg)
+                //     //                            + SQ2(log(lambdas[2])-logavg) );
+                //     //                  float fro = sqrt(lambdas[0]*lambdas[0] + lambdas[1]*lambdas[1] + lambdas[2]*lambdas[2]);
+                //     float ad = lambdas[2];
+                //     float rd = (lambdas[0] + lambdas[1])/2;
 
-                    // We create the corresponding fields and add theirs values
-                    pt.AddField("FA",fa);
-                    pt.AddField("MD",md);
-                    //pt.AddField("FRO",fro);
-                    pt.AddField("l2",lambdas[1]);
-                    pt.AddField("l3",lambdas[0]);
-                    pt.AddField("l1",ad);
-                    pt.AddField("RD",rd);
-                    //pt.AddField("GA",ga);
-                }
+                //     // We create the corresponding fields and add theirs values
+                //     pt.AddField("FA",fa);
+                //     pt.AddField("MD",md);
+                //     //pt.AddField("FRO",fro);
+                //     pt.AddField("l2",lambdas[1]);
+                //     pt.AddField("l3",lambdas[0]);
+                //     pt.AddField("l1",ad);
+                //     pt.AddField("RD",rd);
+                //     //pt.AddField("GA",ga);
+                // }
                 pointsToAdd.push_back(pt); // We add the point to our vector
             }
 
@@ -150,21 +150,21 @@ void writeFiberFile(const std::string & filename, GroupType::Pointer fibergroup)
         // Build VTK data structure
         vtkSmartPointer<vtkPolyData> polydata(vtkPolyData::New());
         vtkSmartPointer<vtkFloatArray> tensorsdata(vtkFloatArray::New());
-        vtkSmartPointer<vtkFloatArray> faData(vtkFloatArray::New());
-        vtkSmartPointer<vtkFloatArray> mdData(vtkFloatArray::New());
-        vtkSmartPointer<vtkFloatArray> rdData(vtkFloatArray::New());
-        vtkSmartPointer<vtkFloatArray> l1Data(vtkFloatArray::New());
-        vtkSmartPointer<vtkFloatArray> l2Data(vtkFloatArray::New());
-        vtkSmartPointer<vtkFloatArray> l3Data(vtkFloatArray::New());
+        // vtkSmartPointer<vtkFloatArray> faData(vtkFloatArray::New());
+        // vtkSmartPointer<vtkFloatArray> mdData(vtkFloatArray::New());
+        // vtkSmartPointer<vtkFloatArray> rdData(vtkFloatArray::New());
+        // vtkSmartPointer<vtkFloatArray> l1Data(vtkFloatArray::New());
+        // vtkSmartPointer<vtkFloatArray> l2Data(vtkFloatArray::New());
+        // vtkSmartPointer<vtkFloatArray> l3Data(vtkFloatArray::New());
         vtkSmartPointer<vtkFloatArray> fiberIndex(vtkFloatArray::New());
         vtkSmartPointer<vtkIdList> ids(vtkIdList::New());
         vtkSmartPointer<vtkPoints> pts(vtkPoints::New());
-        faData->SetName("FA");
-        mdData->SetName("MD");
-        rdData->SetName("RD");
-        l1Data->SetName("L1");
-        l2Data->SetName("L2");
-        l3Data->SetName("L3");
+        // faData->SetName("FA");
+        // mdData->SetName("MD");
+        // rdData->SetName("RD");
+        // l1Data->SetName("L1");
+        // l2Data->SetName("L2");
+        // l3Data->SetName("L3");
         fiberIndex->SetName("FiberLocationIndex");
         tensorsdata->SetNumberOfComponents(9);
         polydata->SetPoints (pts);
@@ -220,12 +220,12 @@ void writeFiberFile(const std::string & filename, GroupType::Pointer fibergroup)
                 vtktensor[8] = sopt->GetTensorMatrix()[5];
 
                 tensorsdata->InsertNextTupleValue(vtktensor);
-                faData->InsertNextTuple1(sopt->GetField("FA"));
-                mdData->InsertNextTuple1(sopt->GetField("MD"));
-                rdData->InsertNextTuple1(sopt->GetField("RD"));
-                l1Data->InsertNextTuple1(sopt->GetField("L1"));
-                l2Data->InsertNextTuple1(sopt->GetField("L2"));
-                l3Data->InsertNextTuple1(sopt->GetField("L3"));
+                // faData->InsertNextTuple1(sopt->GetField("FA"));
+                // mdData->InsertNextTuple1(sopt->GetField("MD"));
+                // rdData->InsertNextTuple1(sopt->GetField("RD"));
+                // l1Data->InsertNextTuple1(sopt->GetField("L1"));
+                // l2Data->InsertNextTuple1(sopt->GetField("L2"));
+                // l3Data->InsertNextTuple1(sopt->GetField("L3"));
                 fiberIndex->InsertNextTuple1(k);
 
             }
@@ -236,18 +236,18 @@ void writeFiberFile(const std::string & filename, GroupType::Pointer fibergroup)
         polydata->GetPointData()->SetTensors(tensorsdata);
         polydata->GetPointData()->SetActiveScalars("FiberLocationIndex");
         polydata->GetPointData()->SetScalars(fiberIndex);
-        polydata->GetPointData()->SetActiveScalars("FA");
-        polydata->GetPointData()->SetScalars(faData);
-        polydata->GetPointData()->SetActiveScalars("MD");
-        polydata->GetPointData()->SetScalars(mdData);
-        polydata->GetPointData()->SetActiveScalars("RD");
-        polydata->GetPointData()->SetScalars(rdData);
-        polydata->GetPointData()->SetActiveScalars("L1");
-        polydata->GetPointData()->SetScalars(l1Data);
-        polydata->GetPointData()->SetActiveScalars("L2");
-        polydata->GetPointData()->SetScalars(l2Data);
-        polydata->GetPointData()->SetActiveScalars("L3");
-        polydata->GetPointData()->SetScalars(l3Data);
+        // polydata->GetPointData()->SetActiveScalars("FA");
+        // polydata->GetPointData()->SetScalars(faData);
+        // polydata->GetPointData()->SetActiveScalars("MD");
+        // polydata->GetPointData()->SetScalars(mdData);
+        // polydata->GetPointData()->SetActiveScalars("RD");
+        // polydata->GetPointData()->SetScalars(rdData);
+        // polydata->GetPointData()->SetActiveScalars("L1");
+        // polydata->GetPointData()->SetScalars(l1Data);
+        // polydata->GetPointData()->SetActiveScalars("L2");
+        // polydata->GetPointData()->SetScalars(l2Data);
+        // polydata->GetPointData()->SetActiveScalars("L3");
+        // polydata->GetPointData()->SetScalars(l3Data);
 
         // Legacy
         if (filename.rfind(".vtk") != std::string::npos)
