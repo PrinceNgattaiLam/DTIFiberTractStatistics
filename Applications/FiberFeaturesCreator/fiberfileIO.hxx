@@ -5,7 +5,7 @@ vtkSmartPointer<vtkPolyData> readVTKFile (std::string filename)
 {           // VTK
 	if (filename.rfind(".vtk") != std::string::npos)
 	{
-        std::cout<<std::endl<<BLUE_BOLD<<"---Reading VTK file "<<CYAN_BOLD<<filename.c_str()<<NC<<std::endl;
+        std::cout<<"---Reading VTK file "<<GREEN<<filename.c_str()<<NC<<std::endl;
         vtkSmartPointer<vtkPolyDataReader> fiberReader = vtkPolyDataReader::New();
         fiberReader->SetFileName(filename.c_str());
         if(fiberReader->OpenVTKFile())
@@ -22,7 +22,7 @@ vtkSmartPointer<vtkPolyData> readVTKFile (std::string filename)
 	        // XML
     else if (filename.rfind(".vtp") != std::string::npos)
     {
-        std::cout<<std::endl<<BLUE_BOLD<<"---Reading VTP file "<<CYAN_BOLD<<filename.c_str()<<std::endl;
+        std::cout<<"---Reading VTP file "<<GREEN<<filename.c_str()<<NC<<std::endl;
         vtkSmartPointer<vtkXMLPolyDataReader> fiberReader = vtkXMLPolyDataReader::New();
         fiberReader->SetFileName(filename.c_str());
         if(fiberReader->CanReadFile(filename.c_str()))
@@ -46,7 +46,7 @@ void writeVTKFile (std::string filename, vtkSmartPointer<vtkPolyData> output)
 {	
 	if (filename.rfind(".vtk") != std::string::npos)
 	{
-        std::cout<<std::endl<<BLUE_BOLD<<"---Writing VTK file "<<CYAN_BOLD<<filename.c_str()<<NC<<std::endl;
+        std::cout<<"---Writing VTK file "<<GREEN<<filename.c_str()<<NC<<std::endl;
         vtkSmartPointer<vtkPolyDataWriter> fiberWriter = vtkPolyDataWriter::New();
         fiberWriter->SetFileName(filename.c_str());
 
@@ -60,7 +60,7 @@ void writeVTKFile (std::string filename, vtkSmartPointer<vtkPolyData> output)
 	        // XML
     else if (filename.rfind(".vtp") != std::string::npos)
     {
-        std::cout<<BLUE_BOLD<<"---Writing VTP file "<<CYAN_BOLD<<filename.c_str()<<NC<<std::endl;
+        std::cout<<"---Writing VTP file "<<GREEN<<filename.c_str()<<NC<<std::endl;
     	vtkSmartPointer<vtkXMLPolyDataWriter> fiberWriter = vtkXMLPolyDataWriter::New();
     	fiberWriter->SetFileName(filename.c_str());
 		#if (VTK_MAJOR_VERSION < 6)
@@ -82,7 +82,7 @@ vtkSmartPointer<vtkPolyData> readFCSVFile (std::string filename)
 {
     if (filename.rfind(".fcsv") != std::string::npos)
     {
-        std::cout<<std::endl<<BLUE_BOLD<<"---Reading FCSV file "<<CYAN_BOLD<<filename.c_str()<<NC<<std::endl;
+        std::cout<<"---Reading FCSV file "<<GREEN<<filename.c_str()<<NC<<std::endl;
         vtkSmartPointer<vtkPolyData> polydata = vtkSmartPointer<vtkPolyData>::New();
         std::fstream fcsvfile(filename.c_str());
         std::string line;
@@ -154,7 +154,7 @@ void writeFCSVFile (std::string filename, vtkSmartPointer<vtkPolyData> output)
 {
     if (filename.rfind(".fcsv") != std::string::npos)
     {
-        std::cout<<std::endl<<BLUE_BOLD<<"---Writting FCSV file "<<CYAN_BOLD<<filename.c_str()<<NC<<std::endl;
+        std::cout<<"---Writting FCSV file "<<GREEN<<filename.c_str()<<NC<<std::endl;
         std::ofstream fcsvfile;
         fcsvfile.open(filename.c_str());
         vtkPoints* points = output->GetPoints();

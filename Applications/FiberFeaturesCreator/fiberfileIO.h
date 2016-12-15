@@ -16,6 +16,7 @@
 #define CYAN "\033[0;36m"
 #define CYAN_BOLD "\033[1;36m"
 #define NC "\033[0m"
+#define NC_BOLD "\033[1m"
 
 /**
  * Read a VTK File

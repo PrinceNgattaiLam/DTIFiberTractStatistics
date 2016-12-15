@@ -78,20 +78,20 @@ void FiberFeaturesCreator::Update()
 	this->init_output();
 	if(fcsvPointsOn)
 	{
-		std::cout<<std::endl<<GREEN_BOLD<<"---FCSV File found, Computing landmarks from the FCSV File"<<NC<<std::endl;
+		std::cout<<std::endl<<"---FCSV File found, Computing landmarks from the FCSV File"<<NC<<std::endl;
 		this->compute_landmarks_from_fcsv();
 		this->compute_landmarks_average();
 	}
 	else if(vtPointsOn)
 	{
-		std::cout<<std::endl<<GREEN_BOLD<<"---VTK File found, Computing landmarks from the VTK File"<<NC<<std::endl;
+		std::cout<<std::endl<<"---VTK File found, Computing landmarks from the VTK File"<<NC<<std::endl;
 		this->compute_landmarks_from_vtk_vtp();
 		this->compute_landmarks_average();
 	}
 	else
 	{
 
-		std::cout<<std::endl<<GREEN_BOLD<<"---No VTK or FCSV File for the landmarks, Computing landmarks from the model"<<NC<<std::endl;
+		std::cout<<std::endl<<"---No VTK or FCSV File for the landmarks, Computing landmarks from the model"<<NC<<std::endl;
 		this->compute_landmarks_from_model();
 		this->compute_landmarks_average();
 	}
