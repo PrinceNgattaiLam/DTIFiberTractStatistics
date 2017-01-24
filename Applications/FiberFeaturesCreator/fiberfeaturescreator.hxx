@@ -1,11 +1,5 @@
 #include "fiberfeaturescreator.h"
 #include "vtkObjectFactory.h"
-#include <vtkSimplePointsWriter.h>
-#include <vtkUnstructuredGrid.h>
-#include <vtkXMLUnstructuredGridWriter.h>
-#include <vtkTetra.h>
-#include <string> 
-#include <fstream>
 
 #define NB_LINES 250
 #define NB_WORDS 250
@@ -105,8 +99,9 @@ void FiberFeaturesCreator::Update()
 		if(!fcsvPointsOn && !vtPointsOn)
 			this->write_landmarks_file();
 	
-
 	}
+	if(this->torsionsOn || this->curvaturesOn)
+		this->compute_tangents_binormals_normals();
 	if(this->torsionsOn)
 	{
 		std::cout<<std::endl;
@@ -335,16 +330,144 @@ void FiberFeaturesCreator::compute_landmarks_average()
 	}
 }
 
-// Method Torsions;	
-void FiberFeaturesCreator::compute_torsions_feature()
+
+void FiberFeaturesCreator::compute_tangents_binormals_normals()
 {
-	
+	vnl_vector_fixed<double,3> x0;
+	vnl_vector_fixed<double,3> x1;
+	vnl_vector_fixed<double,3> x2;
+	double ds0;
+	double ds1;
+	vnl_vector_fixed<double,3> T0;
+	vnl_vector_fixed<double,3> T1;
+	vnl_vector_fixed<double,3> B;
+	vnl_vector_fixed<double,3> N;
+	int NbCells = this->inputFibers->GetNumberOfCells();
+
+	for (int i =0; i<NbCells; i++)
+	{
+		int NbPoints = this->inputFibers->GetCell(i)->GetNumberOfPoints();
+		for(int j = 0; j <NbPoints; j++) 
+		{
+			if(j<NbPoints-1)
+			{
+				x0.copy_in(this->inputFibers->GetCell(i)->GetPoints()->GetPoint(j));
+				x1.copy_in(this->inputFibers->GetCell(i)->GetPoints()->GetPoint(j+1));
+				ds0 = (x1-x0).two_norm();
+				T0 = (x1-x0)/ds0;
+
+				if(this->torsionsOn)
+				{
+					x2.copy_in(this->inputFibers->GetCell(i)->GetPoints()->GetPoint(j+2));
+					ds1 = (x2-x1).two_norm();
+					T1 = (x2-x1)/ds1;
+					B = vnl_cross_3d(T0, T1);
+					N = vnl_cross_3d(B, T0);
+				}
+
+			}
+			this->tangents.push_back(T0);
+			this->ds.push_back(ds0);
+			if(this->torsionsOn)
+			{
+				this->binormals.push_back(B);
+				this->normals.push_back(N);
+			}
+		}
+	}
+
+	// double * x0;
+	// double * x1;
+	// double ds;
+	// double * T;
+	// int NbCells = this->inputFibers->GetNumberOfCells();
+
+	// for (int i =0; i<NbCells; i++)
+	// {
+	// 	int NbPoints = this->inputFibers->GetCell(i)->GetNumberOfPoints();
+	// 	for(int j = 0; j <NbPoints; j++) 
+	// 	{
+	// 		if(j < NbPoints-1)
+	// 		{
+	// 			x0 = this->inputFibers->GetCell(i)->GetPoints()->GetPoint(j);
+	// 			x1 = this->inputFibers->GetCell(i)->GetPoints()->GetPoint(j+1);
+	// 			ds = sqrt((x0[0]-x1[0])*(x0[0]-x1[0]) + (x0[1]-x1[1])*(x0[1]-x1[1]) + (x0[2]-x1[2])*(x0[2]-x1[2]));
+	// 			T = (*x1-*x0)/ds;
+	// 		}
+	// 		this->tangents.push_back(T);
+	// 	}
+	// }
+
+
 }
 
-// Method Curvature;	
+
+// Method Torsions
+/* 
+> If the points of the polyline are x[k]
+> ds[k] = length(x[k+1]-x[k])
+> T[k] = (x[k+1]-x[k]) / ds[k]
+> B[k] = cross(T[k],T[k+1]) // Vector product
+> N[k] = cross(B[k],T[k])
+> // T,B,N defines the discrete Frenet Frame of the curve
+> tau[k]   = -dot((B[k+1] - B[k]),N[k]) / ds[k] //torsion
+*/
+void FiberFeaturesCreator::compute_torsions_feature()
+{
+	std::string featureLabel = "torsion";
+	vtkSmartPointer<vtkFloatArray> torsion = vtkFloatArray::New();
+	torsion->SetName(featureLabel.c_str());
+	int k=0;
+	float tau;
+	int NbCells = this->inputFibers->GetNumberOfCells();
+	for (int i =0; i<NbCells; i++)
+	{
+		int NbPoints = this->inputFibers->GetCell(i)->GetNumberOfPoints();
+		for(int j = 0; j <NbPoints; j++) 
+		{
+			if(j<NbPoints-1)
+			{
+				tau = -dot_product(this->binormals[k+1]-this->binormals[k], this->normals[k])/(this->ds[k]);
+			}
+			torsion->InsertNextTuple1(tau);
+			// std::cout<<tau<<std::endl;
+			k++;
+		}
+	}
+	this->outputFibers->GetPointData()->SetActiveScalars(featureLabel.c_str());
+	this->outputFibers->GetPointData()->SetScalars(torsion);
+}
+// Method Curvature;
+/* 
+> If the points of the polyline are x[k]
+> ds[k] = length(x[k+1]-x[k])
+> T[k] = (x[k+1]-x[k]) / ds[k]
+> // T,B,N defines the discrete Frenet Frame of the curve
+> kappa[k] = length(T[k+1] - T[k]) / ds[k] // curavture
+*/	
 void FiberFeaturesCreator::compute_curvatures_feature()
 {
-	
+	std::string featureLabel = "curvature";
+	vtkSmartPointer<vtkFloatArray> curvature = vtkFloatArray::New();
+	curvature->SetName(featureLabel.c_str());
+	int k=0;
+	float kappa;
+	int NbCells = this->inputFibers->GetNumberOfCells();
+	for (int i =0; i<NbCells; i++)
+	{
+		int NbPoints = this->inputFibers->GetCell(i)->GetNumberOfPoints();
+		for(int j = 0; j <NbPoints; j++) 
+		{
+			if(j<NbPoints-1)
+			{
+				kappa = (this->tangents[k+1]-this->tangents[k]).two_norm()/(this->ds[k]);
+			}
+			curvature->InsertNextTuple1(kappa);
+			k++;
+		}
+	}
+	this->outputFibers->GetPointData()->SetActiveScalars(featureLabel.c_str());
+	this->outputFibers->GetPointData()->SetScalars(curvature);
 	
 }
 
@@ -368,7 +491,7 @@ void FiberFeaturesCreator::write_landmarks_file()
 	std::string fcsv = this->landmarksFilename + ".fcsv";
 	std::ofstream fcsvfile;
 	fcsvfile.open(fcsv.c_str());
-	std::cout<<BLUE_BOLD<<"---Writing FCSV Landmarks File to "<<CYAN_BOLD<<fcsv.c_str()<<NC<<std::endl;
+	std::cout<<"---Writing FCSV Landmarks File to "<<GREEN<<fcsv.c_str()<<NC<<std::endl;
 	fcsvfile << "# Markups fiducial file version = 4.5\n";
 	fcsvfile << "# CoordinateSystem = 0\n";
 	fcsvfile << "# columns = id,x,y,z,ow,ox,oy,oz,vis,sel,lock,label,desc,associatedNodeID\n";

@@ -3,16 +3,17 @@
 
 #include <vtkSmartPointer.h>
 #include <vtkPolyDataAlgorithm.h>
-#include <vtkPolyDataReader.h>
-#include <vtkPolyDataWriter.h>
-#include <vtkXMLPolyDataWriter.h>
-#include <vtkXMLPolyDataReader.h>
+#include <vtkSimplePointsWriter.h>
+#include <vtkCurvatures.h>
+#include <vnl/vnl_vector_fixed.h>
+#include <vnl/vnl_vector.h>
+#include <vnl/vnl_cross.h>
+//#include <vtkTetra.h>
+#include <string> 
+#include <fstream>
 #include <vtkFloatArray.h>
-//#include <vtkDataSet.h>
-//#include <vtkDataSetAttributes.h>
 #include <vtkCellArray.h>
 #include <vtkPointData.h>
-#include <fstream>
 #include "fiberfileIO.h"
 
 /**
@@ -73,14 +74,21 @@ public:
 private:
 
     /** Variables */
+    int nbLandmarks;
+    
     vtkSmartPointer<vtkPolyData> inputFibers;
     vtkSmartPointer<vtkPolyData> outputFibers;
     vtkSmartPointer<vtkPolyData> modelFibers;   //modelFibers that requires a scalar whose the name is "SamplingDistance2Origin"
-    std::vector< vtkSmartPointer<vtkPoints> > landmarks;
+
     vtkSmartPointer<vtkPoints> avgLandmarks;
-    int nbLandmarks;
-    std::vector< vtkSmartPointer<vtkPoints> > curvatures;
-    std::vector< vtkSmartPointer<vtkPoints> > torsions;
+    std::vector< vtkSmartPointer<vtkPoints> > landmarks;
+    std::vector< vnl_vector_fixed<double,3> > tangents;     //Tangents on each point of the fiber
+    std::vector< vnl_vector_fixed<double,3> > binormals;    //binormals on each point of the fiber
+    std::vector< vnl_vector_fixed<double,3> > normals;      //normals on each point of the fiber
+    std::vector< double > ds; // Unity distance between each point of the fiber
+    //std::vector< double* > tangents;
+    //std::vector< vtkSmartPointer<vtkPoints> > curvatures;
+    //std::vector< vtkSmartPointer<vtkPoints> > torsions;
     std::string landmarksFilename;
 
     /** Methods states*/
@@ -119,6 +127,11 @@ private:
      * Compute the landmark feature on the fiber
      */
     void compute_landmark_feature();
+
+    /**
+     * Compute the tangents on each point of the fiber, necessary for the Torsions and Curvatures method
+     */
+    void compute_tangents_binormals_normals();
 
 
     void compute_torsions_feature();	// Method Torsions;
